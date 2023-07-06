@@ -7,7 +7,7 @@ import type { Actions, PageServerLoad } from './$types';
 import * as constants from '$lib/server/constants';
 import { db } from '$lib/server/db';
 import { users } from '$lib/server/schema';
-import { eq } from 'drizzle-orm';
+import { eq, or } from 'drizzle-orm';
 import { createAuthJWT } from '$lib/server/jwt';
 
 export const load = (({ cookies }) => {
@@ -19,11 +19,10 @@ export const load = (({ cookies }) => {
 }) satisfies PageServerLoad;
 
 const LoginSchema = z.object({
-	email: z
-		.string({ required_error: 'Email is required' })
-		.nonempty('Email is required')
-		.max(64, 'Email must be less than 64 characters')
-		.email('Email must be a valid email address'),
+	username: z
+		.string({ required_error: 'Field is required' })
+		.nonempty('Field is required')
+		.max(64, 'Field must be less than 64 characters'),
 	password: z
 		.string({ required_error: 'Password is required' })
 		.min(6, 'Password must be at least 6 characters')
@@ -48,7 +47,10 @@ export const actions = {
 		const [ userByEmail ] = await db
 			.select()
 			.from(users)
-			.where(eq(users.email, data.email))
+			.where(or(
+				eq(users.email, data.username),
+				eq(users.username, data.username)
+			))
 			.all();
 
 		if (!userByEmail) {

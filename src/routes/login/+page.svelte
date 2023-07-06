@@ -12,17 +12,17 @@
 	<form method='post' class='flex flex-col items-center justify-center rounded-lg bg-neutral-100 p-8 drop-shadow-xl w-[400px]'>
 		<h1 class='my-2 text-center text-3xl font-medium'>Login</h1>
 		<label class='mb-3 w-full label'>
-			<span>E-mail</span>
+			<span>E-mail or username</span>
 			<input
 				class='input'
-				class:input-error={!!form?.errors.email}
-				value={form?.data?.email ?? ''}
-				type='email'
-				name='email'
+				class:input-error={!!form?.errors.username}
+				value={form?.data?.username ?? ''}
+				type='text'
+				name='username'
 				placeholder='johndoe@email.com'
 			/>
-			{#if form?.errors.email}
-				<span class='text-error-500'>{form.errors.email[0]}</span>
+			{#if form?.errors.username}
+				<span class='text-error-500'>{form.errors.username[0]}</span>
 			{/if}
 		</label>
 		<label class='mb-5 w-full label'>
