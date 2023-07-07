@@ -1,15 +1,11 @@
 import { fail, redirect } from '@sveltejs/kit';
-import { LibsqlError } from '@libsql/client';
 
-import bcrypt from 'bcrypt';
 import { z } from 'zod';
-import { v4 as uuid } from 'uuid';
 
 import type { Actions, PageServerLoad } from './$types';
-import { db } from '$lib/db';
-import { type User, users } from '$lib/schema';
 import { createAuthJWT } from '$lib/jwt';
 import * as constants from '$lib/constants';
+import { createUser } from '$lib/user.server';
 
 export const load = (({ cookies }) => {
 	const token = cookies.get(constants.authTokenCookie);
@@ -66,53 +62,7 @@ export const actions = {
 		}
 		const { data } = parseResult;
 
-		const salt = bcrypt.genSaltSync(10);
-		const hash = bcrypt.hashSync(data.password, salt);
-
-		const result = await db
-			.insert(users)
-			.values({
-				id: uuid(),
-				email: data.email,
-				username: data.username,
-				hash,
-				salt
-			})
-			.returning()
-			.run()
-			.then(({ rows }) => ({
-				success: true as const,
-				data: rows[0] as unknown as User
-			}))
-			.catch((err: unknown) => {
-				if (!(err instanceof LibsqlError)) {
-					throw err;
-				}
-
-				if (err.code === 'SQLITE_CONSTRAINT_UNIQUE') {
-					const field = err.message.match(/users.(\w+)/)?.[1] as 'username' | 'email';
-
-					if (field === 'username') {
-						return {
-							success: false as const,
-							errors: {
-								username: [ 'Username is already in use' ]
-							}
-						};
-					}
-					return {
-						success: false as const,
-						errors: {
-							email: [ 'Email is already in use' ]
-						}
-					};
-				}
-
-				return {
-					success: false as const,
-					errors: {}
-				};
-			});
+		const result = await createUser(data);
 
 		if (!result.success) {
 			return fail(422, {
@@ -129,9 +79,7 @@ export const actions = {
 			email: newUser.email
 		});
 
-		cookies.set(constants.authTokenCookie, token, {
-			path: '/'
-		});
+		cookies.set(constants.authTokenCookie, token, { path: '/' });
 
 		throw redirect(301, '/');
 	}

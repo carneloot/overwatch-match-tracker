@@ -1,14 +1,11 @@
 import { fail, redirect } from '@sveltejs/kit';
 
-import { eq, or } from 'drizzle-orm';
-import bcrypt from 'bcrypt';
 import { z } from 'zod';
 
 import type { Actions, PageServerLoad } from './$types';
 import * as constants from '$lib/constants';
-import { db } from '$lib/db';
-import { users } from '$lib/schema';
 import { createAuthJWT } from '$lib/jwt';
+import { validateUser } from '$lib/user.server';
 
 export const load = (({ cookies }) => {
 	const token = cookies.get(constants.authTokenCookie);
@@ -44,27 +41,9 @@ export const actions = {
 		}
 		const { data } = parseResult;
 
-		const [ userByEmail ] = await db
-			.select()
-			.from(users)
-			.where(or(
-				eq(users.email, data.username),
-				eq(users.username, data.username)
-			))
-			.all();
+		const user = await validateUser(data);
 
-		if (!userByEmail) {
-			return fail(401, {
-				data: rest,
-				errors: {
-					general: [ 'Invalid credentials' ]
-				}
-			});
-		}
-
-		const hash = bcrypt.hashSync(data.password, userByEmail.salt);
-
-		if (hash !== userByEmail.hash) {
+		if (!user) {
 			return fail(401, {
 				data: rest,
 				errors: {
@@ -74,9 +53,9 @@ export const actions = {
 		}
 
 		const token = await createAuthJWT({
-			id: userByEmail.id,
-			username: userByEmail.username,
-			email: userByEmail.email
+			id: user.id,
+			username: user.username,
+			email: user.email
 		});
 
 		cookies.set(constants.authTokenCookie, token, {
