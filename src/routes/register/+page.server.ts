@@ -6,6 +6,7 @@ import type { Actions, PageServerLoad } from './$types';
 import { createAuthJWT } from '$lib/jwt';
 import * as constants from '$lib/constants';
 import { createUser } from '$lib/user.server';
+import { verifyEmail } from '$lib/email.server';
 
 export const load = (({ cookies }) => {
 	const token = cookies.get(constants.authTokenCookie);
@@ -61,6 +62,16 @@ export const actions = {
 			});
 		}
 		const { data } = parseResult;
+
+		const emailVerified = await verifyEmail(data.email);
+		if (!emailVerified.status) {
+			return fail(422, {
+				data: rest,
+				errors: {
+					email: [ 'Your email could not be verified' ]
+				}
+			});
+		}
 
 		const result = await createUser(data);
 
