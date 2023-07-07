@@ -1,7 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 
 import type { PageServerLoad } from './$types';
-import * as constants from '$lib/server/constants';
+import * as constants from '$lib/constants';
 
 export const load = (async ({ cookies }) => {
 	const token = cookies.get(constants.authTokenCookie);

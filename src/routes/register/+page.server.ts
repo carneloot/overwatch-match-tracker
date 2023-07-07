@@ -6,10 +6,10 @@ import { z } from 'zod';
 import { v4 as uuid } from 'uuid';
 
 import type { Actions, PageServerLoad } from './$types';
-import { db } from '$lib/server/db';
-import { type User, users } from '$lib/server/schema';
-import { createAuthJWT } from '$lib/server/jwt';
-import * as constants from '$lib/server/constants';
+import { db } from '$lib/db';
+import { type User, users } from '$lib/schema';
+import { createAuthJWT } from '$lib/jwt';
+import * as constants from '$lib/constants';
 
 export const load = (({ cookies }) => {
 	const token = cookies.get(constants.authTokenCookie);
