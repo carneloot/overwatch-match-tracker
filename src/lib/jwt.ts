@@ -5,9 +5,7 @@ import { JWT_SECRET } from '$env/static/private';
 import { error } from '@sveltejs/kit';
 
 const JWTPayloadSchema = z.object({
-	id: z.string().uuid(),
-	username: z.string(),
-	email: z.string().email()
+	id: z.string().uuid()
 });
 
 type JWTPayload = z.infer<typeof JWTPayloadSchema>;

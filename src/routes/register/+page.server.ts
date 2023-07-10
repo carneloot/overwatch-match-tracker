@@ -84,14 +84,10 @@ export const actions = {
 
 		const newUser = result.data;
 
-		const token = await createAuthJWT({
-			id: newUser.id,
-			username: newUser.username,
-			email: newUser.email
-		});
+		const token = await createAuthJWT({ id: newUser.id });
 
 		cookies.set(constants.authTokenCookie, token, { path: '/' });
 
-		throw redirect(301, '/');
+		throw redirect(302, '/');
 	}
 } satisfies Actions;

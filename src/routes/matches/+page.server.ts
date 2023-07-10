@@ -1,13 +1,11 @@
 import { redirect } from '@sveltejs/kit';
 
 import type { PageServerLoad } from './$types';
-import * as constants from '$lib/constants';
+import { handleLoginRedirect } from '$lib/utils';
 
-export const load = (async ({ cookies }) => {
-	const token = cookies.get(constants.authTokenCookie);
-
-	if (!token) {
-		throw redirect(301, '/login');
+export const load = (async (event) => {
+	if (!event.locals.user) {
+		throw redirect(301, handleLoginRedirect(event));
 	}
 
 }) satisfies PageServerLoad;

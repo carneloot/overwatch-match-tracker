@@ -95,3 +95,17 @@ export async function validateUser(data: ValidateUser) {
 
 	return user;
 }
+
+export async function getUserById(id: string) {
+	const [ user ] = await db
+		.select({
+			id: usersTable.id,
+			username: usersTable.username,
+			email: usersTable.email,
+			role: usersTable.role
+		})
+		.from(usersTable)
+		.where(eq(usersTable.id, id))
+		.all();
+	return user;
+}

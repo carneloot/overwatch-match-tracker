@@ -16,4 +16,4 @@ export const users = sqliteTable(
 	})
 );
 
-export type User = InferModel<typeof users, 'select'>;
+export type User = Omit<InferModel<typeof users, 'select'>, 'hash' | 'salt'>;

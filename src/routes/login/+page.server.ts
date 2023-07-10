@@ -28,8 +28,8 @@ const LoginSchema = z.object({
 });
 
 export const actions = {
-	default: async ({ request, cookies }) => {
-		const formData = Object.fromEntries(await request.formData());
+	default: async (event) => {
+		const formData = Object.fromEntries(await event.request.formData());
 		const parseResult = LoginSchema.safeParse(formData);
 		const { password, ...rest } = formData;
 		if (!parseResult.success) {
@@ -52,16 +52,17 @@ export const actions = {
 			});
 		}
 
-		const token = await createAuthJWT({
-			id: user.id,
-			username: user.username,
-			email: user.email
-		});
+		const token = await createAuthJWT({ id: user.id });
 
-		cookies.set(constants.authTokenCookie, token, {
+		event.cookies.set(constants.authTokenCookie, token, {
 			path: '/'
 		});
 
-		throw redirect(301, '/');
+		const redirectTo = event.url.searchParams.get('redirectTo');
+		if (redirectTo) {
+			redirect(302, `/${redirectTo.slice(1)}`);
+		}
+
+		throw redirect(302, '/');
 	}
 } satisfies Actions;
