@@ -1,11 +1,9 @@
 <script lang='ts'>
-	import type { ActionData } from './$types';
-
-	export let form: ActionData;
+	export let form;
 </script>
 
 <svelte:head>
-	<title>Register: Overwatch Match Tracker</title>
+	<title>Register</title>
 </svelte:head>
 
 <div class='flex h-full w-full flex-col items-center justify-center'>

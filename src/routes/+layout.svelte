@@ -4,8 +4,16 @@
 	import '@skeletonlabs/skeleton/styles/skeleton.css';
 
 	import '../app.css';
+
+	import Header from '$lib/components/header.svelte';
+
+	export let data;
 </script>
 
-<main class='h-full w-full'>
-	<slot />
-</main>
+<div class='h-full grid mx-auto px-7 grid-rows-[auto_1fr]'>
+	<Header user={data.user} />
+
+	<main class='py-6'>
+		<slot />
+	</main>
+</div>

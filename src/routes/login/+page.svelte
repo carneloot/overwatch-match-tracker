@@ -5,7 +5,7 @@
 </script>
 
 <svelte:head>
-	<title>Login: Overwatch Match Tracker</title>
+	<title>Login</title>
 </svelte:head>
 
 <div class='flex h-full w-full flex-col items-center justify-center'>

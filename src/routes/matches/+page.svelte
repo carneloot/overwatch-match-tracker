@@ -1,5 +1,5 @@
 <svelte:head>
-	<title>Matches: Overwatch Match Tracker</title>
+	<title>Matches</title>
 </svelte:head>
 
 <h1>Matches</h1>
