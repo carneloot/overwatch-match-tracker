@@ -3,8 +3,8 @@ import { LibsqlError } from '@libsql/client';
 import { v4 as uuid } from 'uuid';
 import bcrypt from 'bcrypt';
 
-import { db } from '$lib/db';
-import { type User, users } from '$lib/schema';
+import { db } from '$lib/database/db';
+import { type User, users } from '$lib/database/schema';
 import { eq, or } from 'drizzle-orm';
 
 
