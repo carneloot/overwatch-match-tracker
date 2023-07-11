@@ -5,11 +5,12 @@
 	export let user: User | null = null;
 
 	const links = [
-		{ name: 'Matches', href: '/matches' }
+		{ name: 'Matches', href: '/matches' },
+		{ name: 'Accounts', href: '/accounts' }
 	];
 </script>
 
-<header class='flex w-full justify-between py-5'>
+<header class='flex w-full justify-between py-5 px-7 bg-surface-100'>
 	<h1 class='text-3xl text-medium'>
 		<a href='/'>
 			Ovewatch Match Tracker
@@ -23,7 +24,7 @@
 					class='grid place-items-center'
 					class:text-primary-800={$page.route.id?.startsWith(link.href) ?? false}
 				>
-					<a href={link.href} class='px-5 py-3'>{link.name}</a>
+					<a href={link.href} class='px-3 py-3'>{link.name}</a>
 				</li>
 			{/each}
 			{#if user !== null}

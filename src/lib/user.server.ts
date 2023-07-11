@@ -4,7 +4,7 @@ import { v4 as uuid } from 'uuid';
 import bcrypt from 'bcrypt';
 
 import { db } from '$lib/database/db';
-import { type User, users } from '$lib/database/schema';
+import { type User, usersTable } from '$lib/database/schema';
 import { eq, or } from 'drizzle-orm';
 
 
@@ -25,7 +25,7 @@ export async function createUser(data: InsertUser) {
 
 	try {
 		const { rows } = await db
-			.insert(users)
+			.insert(usersTable)
 			.values({
 				id: uuid(),
 				email: data.email,
@@ -76,10 +76,10 @@ export async function createUser(data: InsertUser) {
 export async function validateUser(data: ValidateUser) {
 	const [ user ] = await db
 		.select()
-		.from(users)
+		.from(usersTable)
 		.where(or(
-			eq(users.email, data.username),
-			eq(users.username, data.username)
+			eq(usersTable.email, data.username),
+			eq(usersTable.username, data.username)
 		))
 		.all();
 

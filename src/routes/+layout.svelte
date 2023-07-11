@@ -10,10 +10,10 @@
 	export let data;
 </script>
 
-<div class='h-full grid mx-auto px-7 grid-rows-[auto_1fr]'>
+<div class='mx-auto grid h-full grid-rows-[auto_1fr]'>
 	<Header user={data.user} />
 
-	<main class='py-6'>
+	<main class='mx-auto py-6 container'>
 		<slot />
 	</main>
 </div>
