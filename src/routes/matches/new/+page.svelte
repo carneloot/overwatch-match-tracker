@@ -5,6 +5,8 @@
 	import { heroesByRole } from '$lib/data/heroes';
 	import { mapsByType } from '$lib/data/maps';
 	import { currentSeason } from '$lib/data/seasons';
+	import { matchResult } from '$lib/prettify';
+	import { heroRole, mapType } from '$lib/prettify.js';
 
 	export let data;
 
@@ -33,7 +35,7 @@
 			<span>Map</span>
 			<select name='map' class='select' bind:value={$form.map} {...$constraints.map}>
 				{#each mapsByType as type}
-					<optgroup label={type.name}>
+					<optgroup label={mapType[type.name]}>
 						{#each type.values as map}
 							<option value={map.slug}>{map.name}</option>
 						{/each}
@@ -46,7 +48,7 @@
 			<span>Heroes</span>
 			<select name='heroes' multiple class='select' bind:value={$form.heroes} {...$constraints.heroes}>
 				{#each heroesByRole as role}
-					<optgroup label={role.name}>
+					<optgroup label={heroRole[role.name]}>
 						{#each role.values as hero}
 							<option value={hero.slug}>{hero.name}</option>
 						{/each}
@@ -78,9 +80,9 @@
 				bind:value={$form.result}
 				{...$constraints.result}
 			>
-				<option value='win' class='text-success-700'>Win</option>
-				<option value='draw' class='text-warning-700'>Draw</option>
-				<option value='lose' class='text-error-700'>Lose</option>
+				<option value='win' class='text-success-700'>{matchResult['win']}</option>
+				<option value='draw' class='text-warning-700'>{matchResult['draw']}</option>
+				<option value='lose' class='text-error-700'>{matchResult['lose']}</option>
 			</select>
 		</label>
 

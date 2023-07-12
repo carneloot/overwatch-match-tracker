@@ -1,6 +1,6 @@
 import { groupByField } from '$lib/utils';
 
-type MapType = 'control' | 'hybrid' | 'escort' | 'deathmatch' | 'push';
+export type MapType = 'control' | 'hybrid' | 'escort' | 'deathmatch' | 'push';
 
 export type OverwatchMap = {
 	slug: string;
@@ -186,3 +186,4 @@ export const allMaps = Object.values(maps) as OverwatchMap[];
 
 export const allMapSlugs = Object.keys(maps) as OverwatchMapSlug[];
 export const mapsByType = groupByField(allMaps, 'type');
+mapsByType.sort((a, b) => a.name.localeCompare(b.name));

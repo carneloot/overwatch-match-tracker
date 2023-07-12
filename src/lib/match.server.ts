@@ -5,9 +5,9 @@ import { and, desc, eq, sql } from 'drizzle-orm';
 import { db } from '$lib/database/db';
 import { accountsMatchesTable, accountsTable, heroesMatchesTable, matchesTable } from '$lib/database/schema';
 
-import { allMapSlugs, type OverwatchMapSlug } from '$lib/data/maps';
-import { allHeroSlugs, type OverwatchHeroSlug } from '$lib/data/heroes';
-import { currentSeason, type OverwatchSeasonSlug } from '$lib/data/seasons';
+import { allMapSlugs, maps, type OverwatchMapSlug } from '$lib/data/maps';
+import { allHeroSlugs, heroes, type OverwatchHeroSlug } from '$lib/data/heroes';
+import { currentSeason, type OverwatchSeasonSlug, seasons } from '$lib/data/seasons';
 import { jsonParse } from '$lib/utils';
 
 const OVERWATCH_MAPS: [ OverwatchMapSlug, ...OverwatchMapSlug[] ] = [
@@ -109,7 +109,9 @@ export async function getMatchesForDisplay({ accountId, season, limit, skip }: G
 
 	return matches.map(match => ({
 		...match,
-		heroes: jsonParse<OverwatchHeroSlug[]>(match.heroes),
+		modality: seasons[season].modalities[match.modality],
+		map: maps[match.map].name,
+		heroes: jsonParse<OverwatchHeroSlug[]>(match.heroes).map(slug => heroes[slug].name),
 		accounts: jsonParse<string[]>(match.accounts)
 	}));
 }

@@ -6,6 +6,7 @@
 
 	import { Paginator } from '@skeletonlabs/skeleton';
 	import type { PaginatorProps } from '@skeletonlabs/skeleton/dist/components/Paginator/Paginator.svelte';
+	import { matchResult } from '$lib/prettify.js';
 
 	export let data;
 
@@ -70,11 +71,11 @@
 		<tr>
 			<td>
 				<span
-					class='badge'
+					class='badge w-6/12'
 					class:variant-filled-success={match.result === 'win'}
 					class:variant-filled-warning={match.result === 'draw'}
 					class:variant-filled-error={match.result === 'lose'}
-				>{match.result}</span>
+				>{matchResult[match.result]}</span>
 			</td>
 			<td>{match.modality}</td>
 			<td>{match.map}</td>
