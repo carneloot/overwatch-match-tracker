@@ -29,3 +29,7 @@ export function dateToDatetimeLocal(date: Date | null): string {
 	copyDate.setMinutes(copyDate.getMinutes() - copyDate.getTimezoneOffset());
 	return copyDate?.toISOString().slice(0, 16) ?? '';
 }
+
+export function jsonParse<T = unknown>(value: string) {
+	return JSON.parse(value) as T;
+}

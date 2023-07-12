@@ -2,6 +2,9 @@
 	import { superForm } from 'sveltekit-superforms/client';
 
 	import { dateToDatetimeLocal } from '$lib/utils';
+	import { heroesByRole } from '$lib/data/heroes';
+	import { mapsByType } from '$lib/data/maps';
+	import { currentSeason } from '$lib/data/seasons';
 
 	export let data;
 
@@ -19,20 +22,20 @@
 	<div class='mb-3 grid sm:grid-cols-2 gap-3'>
 		<label class='label'>
 			<span>Modality</span>
-			<select name='modalityId' class='select' bind:value={$form.modalityId} {...$constraints.modalityId}>
-				{#each data.availableModalities as modality}
-					<option value={modality.id}>{modality.name}</option>
+			<select name='modality' class='select' bind:value={$form.modality} {...$constraints.modality}>
+				{#each Object.entries(currentSeason.modalities) as [ slug, name ]}
+					<option value={slug}>{name}</option>
 				{/each}
 			</select>
 		</label>
 
 		<label class='label'>
 			<span>Map</span>
-			<select name='mapId' class='select' bind:value={$form.mapId} {...$constraints.mapId}>
-				{#each data.availableMaps as modality}
-					<optgroup label={modality.name}>
-						{#each modality.values as map}
-							<option value={map.id}>{map.name}</option>
+			<select name='map' class='select' bind:value={$form.map} {...$constraints.map}>
+				{#each mapsByType as type}
+					<optgroup label={type.name}>
+						{#each type.values as map}
+							<option value={map.slug}>{map.name}</option>
 						{/each}
 					</optgroup>
 				{/each}
@@ -42,10 +45,10 @@
 		<label class='label'>
 			<span>Heroes</span>
 			<select name='heroes' multiple class='select' bind:value={$form.heroes} {...$constraints.heroes}>
-				{#each data.availableHeroes as role}
+				{#each heroesByRole as role}
 					<optgroup label={role.name}>
 						{#each role.values as hero}
-							<option value={hero.id}>{hero.name}</option>
+							<option value={hero.slug}>{hero.name}</option>
 						{/each}
 					</optgroup>
 				{/each}
@@ -93,7 +96,6 @@
 		</label>
 	</div>
 	<div class='flex flex-row justify-end'>
-		<input type='hidden' name='seasonId' bind:value={$form.seasonId}>
 		<input type='hidden' name='accountId' bind:value={$form.accountId}>
 		<button type='submit' class='btn variant-filled-primary'>Create</button>
 	</div>

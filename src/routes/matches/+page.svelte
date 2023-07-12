@@ -50,7 +50,6 @@
 		<th>Result</th>
 		<th>Modality</th>
 		<th>Map</th>
-		<th>Role</th>
 		<th>Heroes</th>
 		<th>Group</th>
 		<th>Time</th>
@@ -79,7 +78,6 @@
 			</td>
 			<td>{match.modality}</td>
 			<td>{match.map}</td>
-			<td>{match.role}</td>
 			<td>{match.heroes?.join(', ') ?? ''}</td>
 			<td>{match.accounts?.join(', ') ?? ''}</td>
 			<td>{formatter.format(match.time)}</td>

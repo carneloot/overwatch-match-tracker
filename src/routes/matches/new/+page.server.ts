@@ -6,12 +6,8 @@ import type { Actions, PageServerLoad } from './$types';
 
 import * as constants from '$lib/constants';
 
-import { getActiveSeason } from '$lib/season.server';
 import { getAccountsByUser, getSelectedAccountByUser } from '$lib/account.server';
-import { groupByField, handleLoginRedirect } from '$lib/utils';
-import { getEnabledHeroes } from '$lib/hero.server';
-import { getEnabledMaps } from '$lib/map.server';
-import { getModalities } from '$lib/modality.server';
+import { handleLoginRedirect } from '$lib/utils';
 import { createNewMatch, type NewMatch, newMatchSchema } from '$lib/match.server';
 
 export const load = (async (event) => {
@@ -21,13 +17,11 @@ export const load = (async (event) => {
 
 	const currentTime = new Date();
 
-	const activeSeason = await getActiveSeason(currentTime);
 	const userAccount = await getSelectedAccountByUser(event.locals.user.id);
 
-	const keepValuesCookie = JSON.parse(event.cookies.get(constants.cookies.matchKeepValue) ?? 'null') as Pick<NewMatch, 'accounts' | 'modalityId'> | null;
+	const keepValuesCookie = JSON.parse(event.cookies.get(constants.cookies.matchKeepValue) ?? 'null') as Pick<NewMatch, 'accounts' | 'modality'> | null;
 
 	const initialValues = {
-		seasonId: activeSeason?.id,
 		time: currentTime,
 		accountId: userAccount.id,
 		accounts: [],
@@ -37,16 +31,10 @@ export const load = (async (event) => {
 	const form = await superValidate(initialValues, newMatchSchema);
 
 	const availableAccounts = getAccountsByUser(event.locals.user.id);
-	const availableHeroes = getEnabledHeroes();
-	const availableMaps = getEnabledMaps();
-	const availableModalities = getModalities();
 
 	return {
 		form,
-		availableAccounts,
-		availableModalities,
-		availableHeroes: availableHeroes.then(arr => groupByField(arr, 'role')),
-		availableMaps: availableMaps.then(arr => groupByField(arr, 'type'))
+		availableAccounts
 	};
 }) satisfies PageServerLoad;
 
@@ -63,7 +51,7 @@ export const actions = {
 		// region Keep Values Cookie
 		const keepValuesCookie = {
 			accounts: form.data.accounts,
-			modalityId: form.data.modalityId
+			modality: form.data.modality
 		};
 
 		event.cookies.set(constants.cookies.matchKeepValue, JSON.stringify(keepValuesCookie), {

@@ -1,11 +1,15 @@
 import { index, integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
 import type { InferModel } from 'drizzle-orm';
+import type { HeroRole, OverwatchHeroSlug } from '$lib/data/heroes';
+import type { OverwatchMapSlug } from '$lib/data/maps';
+import type { OverwatchSeasonSlug } from '$lib/data/seasons';
 
-export type MapType = 'hybrid' | 'control' | 'push' | 'escort' | 'deathmatch';
-export type MatchResult = 'win' | 'lose' | 'draw';
-export type HeroRole = 'damage' | 'tank' | 'support';
 export type UserRole = 'user' | 'admin';
+
+export type MatchResult = 'win' | 'lose' | 'draw';
+
 export type SkillTier = 'bronze' | 'silver' | 'gold' | 'platinum' | 'diamond' | 'master' | 'grandmaster' | 'top500';
+export type SeasonalUpdate = 'start' | 'end';
 
 export const usersTable = sqliteTable(
 	'users',
@@ -35,65 +39,20 @@ export const accountsTable = sqliteTable(
 	}
 );
 
-export const mapsTable = sqliteTable(
-	'maps',
-	{
-		id: text('id').primaryKey(),
-		type: text('type').$type<MapType>().notNull(),
-		name: text('name').notNull(),
-		slug: text('slug').notNull(),
-		picturePath: text('picture_path'),
-		enabled: integer('enabled', { mode: 'boolean' }).notNull().default(true)
-	},
-	self => ({
-		slugIdx: uniqueIndex('slugIdx').on(self.slug)
-	})
-);
-
-export const heroesTable = sqliteTable(
-	'heroes',
-	{
-		id: text('id').primaryKey(),
-		role: text('role').$type<HeroRole>().notNull(),
-		name: text('name').notNull(),
-		enabled: integer('enabled', { mode: 'boolean' }).default(true)
-	}
-);
-
-export const seasonsTable = sqliteTable(
-	'seasons',
-	{
-		id: text('id').primaryKey(),
-		name: text('name').notNull(),
-		startTime: integer('start_time', { mode: 'timestamp' }).notNull(),
-		finishTime: integer('finish_time', { mode: 'timestamp' }).notNull()
-	},
-	self => ({
-		startTimeIdx: index('startTimeIdx').on(self.startTime),
-		finishTimeIdx: index('finishTimeIdx').on(self.finishTime)
-	})
-);
-
 export const rankUpdatesTable = sqliteTable(
 	'rank_updates',
 	{
 		id: text('id').primaryKey(),
 		accountId: text('account_id').references(() => accountsTable.id).notNull(),
-		seasonId: text('season_id').references(() => seasonsTable.id).notNull(),
+		matchId: text('match_id').references(() => matchesTable.id),
+		seasonalUpdate: text('seasonal_update').$type<SeasonalUpdate>(),
+		season: text('season').notNull().$type<OverwatchSeasonSlug>(),
+		modality: text('modality').notNull(),
+		role: text('role').$type<HeroRole>(),
 		time: integer('time', { mode: 'timestamp' }).notNull(),
-		initial: integer('initial', { mode: 'boolean' }),
-		tier: text('tier').$type<SkillTier>().notNull(),
+		tier: text('tier').notNull().$type<SkillTier>(),
 		division: integer('division').notNull(),
 		percentage: integer('percentage')
-	}
-);
-
-export const modalitiesTable = sqliteTable(
-	'modalities',
-	{
-		id: text('id').primaryKey(),
-		name: text('name').notNull(),
-		roleSpecific: integer('role_specific', { mode: 'boolean' }).notNull().default(false)
 	}
 );
 
@@ -102,10 +61,9 @@ export const matchesTable = sqliteTable(
 	{
 		id: text('id').primaryKey(),
 		accountId: text('account_id').references(() => accountsTable.id).notNull(),
-		mapId: text('map_id').references(() => mapsTable.id).notNull(),
-		seasonId: text('season_id').references(() => seasonsTable.id).notNull(),
-		modalityId: text('modality_id').references(() => modalitiesTable.id).notNull(),
-		rankUpdateId: text('rank_update_id').references(() => rankUpdatesTable.id),
+		map: text('map').notNull().$type<OverwatchMapSlug>(),
+		season: text('season').notNull().$type<OverwatchSeasonSlug>(),
+		modality: text('modality').notNull(),
 		result: text('result').$type<MatchResult>().notNull(),
 		time: integer('time', { mode: 'timestamp' }).notNull()
 	},
@@ -131,7 +89,7 @@ export const heroesMatchesTable = sqliteTable(
 	{
 		id: text('id').primaryKey(),
 		matchId: text('match_id').references(() => matchesTable.id).notNull(),
-		heroId: text('hero_id').references(() => heroesTable.id).notNull()
+		hero: text('hero').notNull().$type<OverwatchHeroSlug>()
 	},
 	self => ({
 		matchIdIdx: index('heroMtchMatchIdIdx').on(self.matchId)
