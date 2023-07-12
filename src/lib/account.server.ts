@@ -3,7 +3,7 @@ import { and, eq, type InferModel } from 'drizzle-orm';
 import { db } from '$lib/database/db';
 import { accountsTable } from '$lib/database/schema';
 
-export async function getDefaultAccountByUser(userId: string) {
+export async function getSelectedAccountByUser(userId: string) {
 	const [ account ] = await db
 		.select()
 		.from(accountsTable)
@@ -13,6 +13,7 @@ export async function getDefaultAccountByUser(userId: string) {
 				eq(accountsTable.selected, true)
 			)
 		)
+		.orderBy(accountsTable.battleTag)
 		.all();
 
 	return account;

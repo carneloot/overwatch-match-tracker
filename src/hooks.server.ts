@@ -5,7 +5,7 @@ import { getUserById } from '$lib/user.server';
 import * as constants from '$lib/constants';
 
 export const handle = (async ({ event, resolve }) => {
-	const token = event.cookies.get(constants.authTokenCookie);
+	const token = event.cookies.get(constants.cookies.authToken);
 
 	if (token) {
 		const { id: userId } = await verifyJwt(token);

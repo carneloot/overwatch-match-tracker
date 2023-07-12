@@ -12,10 +12,8 @@
 	<title>New Account</title>
 </svelte:head>
 
+<h2 class='h2 mb-5'>New Account</h2>
 <form method='POST' class='w-full p-6 card'>
-	<header class='mb-5'>
-		<h2 class='h2'>New Account</h2>
-	</header>
 	<div class='mb-3'>
 		<label class='label mb-3'>
 			<span>Battle Tag</span>

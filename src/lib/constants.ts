@@ -1,1 +1,4 @@
-export const authTokenCookie = 'auth_token';
+export const cookies = {
+	authToken: 'authToken',
+	matchKeepValue: 'matchKeepValue'
+} as const;

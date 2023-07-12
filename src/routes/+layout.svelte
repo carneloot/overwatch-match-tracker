@@ -13,7 +13,7 @@
 <div class='mx-auto grid h-full grid-rows-[auto_1fr]'>
 	<Header user={data.user} />
 
-	<main class='mx-auto py-6 container'>
+	<main class='mx-auto py-6 lg:px-4 container'>
 		<slot />
 	</main>
 </div>

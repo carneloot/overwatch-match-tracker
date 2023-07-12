@@ -8,7 +8,7 @@ import { createAuthJWT } from '$lib/jwt';
 import { validateUser } from '$lib/user.server';
 
 export const load = (({ cookies }) => {
-	const token = cookies.get(constants.authTokenCookie);
+	const token = cookies.get(constants.cookies.authToken);
 
 	if (token) {
 		throw redirect(301, '/');
@@ -54,7 +54,7 @@ export const actions = {
 
 		const token = await createAuthJWT({ id: user.id });
 
-		event.cookies.set(constants.authTokenCookie, token, {
+		event.cookies.set(constants.cookies.authToken, token, {
 			path: '/'
 		});
 

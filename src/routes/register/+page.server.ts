@@ -9,7 +9,7 @@ import { createUser } from '$lib/user.server';
 import { verifyEmail } from '$lib/email.server';
 
 export const load = (({ cookies }) => {
-	const token = cookies.get(constants.authTokenCookie);
+	const token = cookies.get(constants.cookies.authToken);
 
 	if (token) {
 		throw redirect(301, '/');
@@ -86,7 +86,7 @@ export const actions = {
 
 		const token = await createAuthJWT({ id: newUser.id });
 
-		cookies.set(constants.authTokenCookie, token, { path: '/' });
+		cookies.set(constants.cookies.authToken, token, { path: '/' });
 
 		throw redirect(302, '/');
 	}
