@@ -1,11 +1,12 @@
-<script lang='ts'>
+<script lang="ts">
 	import { Plus } from 'lucide-svelte';
+
+	import { Paginator } from '@skeletonlabs/skeleton';
+	import type { PaginatorProps } from '@skeletonlabs/skeleton/dist/components/Paginator/Paginator.svelte';
 
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 
-	import { Paginator } from '@skeletonlabs/skeleton';
-	import type { PaginatorProps } from '@skeletonlabs/skeleton/dist/components/Paginator/Paginator.svelte';
 	import { matchResult } from '$lib/prettify.js';
 
 	export let data;
@@ -15,8 +16,8 @@
 
 	let paginatorSettings = {
 		size: data.total,
-		limit: $page.url.searchParams.get('limit') ?? 10,
-		offset: $page.url.searchParams.get('skip') ?? 0,
+		limit: Number($page.url.searchParams.get('limit') ?? 10),
+		offset: Number($page.url.searchParams.get('skip') ?? 0),
 		amounts: []
 	} satisfies PaginatorProps['settings'];
 
@@ -37,15 +38,15 @@
 	<title>Matches</title>
 </svelte:head>
 
-<div class='flex justify-between mb-6'>
-	<h2 class='h2'>Matches</h2>
-	<a href='/matches/new' class='btn variant-filled-primary text-white'>
+<div class="mb-6 flex justify-between">
+	<h2 class="h2">Matches</h2>
+	<a href="/matches/new" class="btn variant-filled-primary text-white">
 		<span><Plus size={20} /></span>
 		<span>New Match</span>
 	</a>
 </div>
 
-<table class='table table-interactive w-full mb-4'>
+<table class="mb-4 table w-full">
 	<thead>
 	<tr>
 		<th>Result</th>
@@ -61,9 +62,9 @@
 	<tbody>
 	{#if data.total === 0}
 		<tr>
-			<td colspan='8' class='text-center'>
+			<td colspan="8" class="text-center">
 				There are no matches for the current account.
-				<br>Add matches clicking on the "New Match" button.
+				<br />Add matches clicking on the "New Match" button.
 			</td>
 		</tr>
 	{/if}
@@ -71,16 +72,23 @@
 		<tr>
 			<td>
 				<span
-					class='badge w-6/12'
+					class="badge w-6/12"
 					class:variant-filled-success={match.result === 'win'}
 					class:variant-filled-warning={match.result === 'draw'}
 					class:variant-filled-error={match.result === 'lose'}
-				>{matchResult[match.result]}</span>
+					>{matchResult[match.result]}</span
+				>
 			</td>
 			<td>{match.modality}</td>
 			<td>{match.map}</td>
 			<td>{match.heroes?.join(', ') ?? ''}</td>
-			<td>{match.accounts?.join(', ') ?? ''}</td>
+			<td>
+				{#if match.accounts.length}
+					{match.accounts.join(', ')}
+				{:else}
+					Solo queue
+				{/if}
+			</td>
 			<td>{formatter.format(match.time)}</td>
 			<td>TODO</td>
 		</tr>
@@ -93,5 +101,5 @@
 	on:page={onPageChange}
 	showNumerals
 	maxNumerals={2}
-	justify='justify-center'
+	justify="justify-center"
 />
