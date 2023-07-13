@@ -1,4 +1,6 @@
 import type { RequestEvent } from '@sveltejs/kit';
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
 export function handleLoginRedirect(event: RequestEvent) {
 	const redirectTo = event.url.pathname + event.url.search;
@@ -13,11 +15,11 @@ export function groupByField<Type, Key extends keyof Type>(arr: Type[], key: Key
 			const innerArr = map.get(value[key]);
 			innerArr?.push(value);
 		} else {
-			map.set(value[key], [ value ]);
+			map.set(value[key], [value]);
 		}
 	}
 
-	return [ ...map.entries() ].reduce(
+	return [...map.entries()].reduce(
 		(acc, curr) => acc.concat({ name: curr[0], values: curr[1] }),
 		[] as Array<{ name: Type[Key], values: Type[] }>
 	);
@@ -32,4 +34,8 @@ export function dateToDatetimeLocal(date: Date | null): string {
 
 export function jsonParse<T = unknown>(value: string) {
 	return JSON.parse(value) as T;
+}
+
+export function cn(...inputs: ClassValue[]) {
+	return twMerge(clsx(inputs));
 }

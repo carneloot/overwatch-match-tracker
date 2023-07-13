@@ -1,4 +1,5 @@
 import { groupByField } from '$lib/utils';
+import { z } from 'zod';
 
 export type MapType = 'control' | 'hybrid' | 'escort' | 'deathmatch' | 'push';
 
@@ -187,3 +188,10 @@ export const allMaps = Object.values(maps) as OverwatchMap[];
 export const allMapSlugs = Object.keys(maps) as OverwatchMapSlug[];
 export const mapsByType = groupByField(allMaps, 'type');
 mapsByType.sort((a, b) => a.name.localeCompare(b.name));
+
+const OVERWATCH_MAPS: [OverwatchMapSlug, ...OverwatchMapSlug[]] = [
+	allMapSlugs[0],
+	...allMapSlugs.slice(1)
+];
+
+export const OverwatchMapEnum = z.enum(OVERWATCH_MAPS);

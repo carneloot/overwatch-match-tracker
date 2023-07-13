@@ -1,15 +1,21 @@
 import { index, integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
 import type { InferModel } from 'drizzle-orm';
+import { z } from 'zod';
+
 import type { HeroRole, OverwatchHeroSlug } from '$lib/data/heroes';
 import type { OverwatchMapSlug } from '$lib/data/maps';
 import type { OverwatchSeasonSlug } from '$lib/data/seasons';
 
 export type UserRole = 'user' | 'admin';
 
-export type MatchResult = 'win' | 'lose' | 'draw';
+export const MatchResult = z.enum(['win', 'lose', 'draw']);
+export type MatchResult = z.infer<typeof MatchResult>;
 
-export type SkillTier = 'bronze' | 'silver' | 'gold' | 'platinum' | 'diamond' | 'master' | 'grandmaster' | 'top500';
-export type SeasonalUpdate = 'start' | 'end';
+export const SeasonalUpdate = z.enum(['start', 'end']);
+export type SeasonalUpdate = z.infer<typeof SeasonalUpdate>;
+
+export const SkillTier = z.enum(['bronze', 'silver', 'gold', 'platinum', 'diamond', 'master', 'grandmaster', 'top500']);
+export type SkillTier = z.infer<typeof SkillTier>;
 
 export const usersTable = sqliteTable(
 	'users',
@@ -55,6 +61,8 @@ export const rankUpdatesTable = sqliteTable(
 		percentage: integer('percentage')
 	}
 );
+
+export type RankUpdate = InferModel<typeof rankUpdatesTable, 'select'>;
 
 export const matchesTable = sqliteTable(
 	'matches',

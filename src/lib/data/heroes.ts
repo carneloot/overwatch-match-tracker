@@ -1,6 +1,8 @@
 import { groupByField } from '$lib/utils';
+import { z } from 'zod';
 
-export type HeroRole = 'damage' | 'support' | 'tank';
+export const HeroRole = z.enum(['damage', 'support', 'tank'])
+export type HeroRole = z.infer<typeof HeroRole>;
 
 export type OverwatchHero = {
 	slug: string;
@@ -238,3 +240,9 @@ export type OverwatchHeroSlug = keyof typeof heroes;
 export const allHeroes = Object.values(heroes) as OverwatchHero[];
 export const allHeroSlugs = Object.keys(heroes) as OverwatchHeroSlug[];
 export const heroesByRole = groupByField(allHeroes, 'role');
+
+const OVERWATCH_HEROES: [OverwatchHeroSlug, ...OverwatchHeroSlug[]] = [
+	allHeroSlugs[0],
+	...allHeroSlugs.slice(1)
+];
+export const OverwatchHeroEnum = z.enum(OVERWATCH_HEROES);

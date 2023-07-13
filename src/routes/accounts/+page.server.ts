@@ -1,10 +1,53 @@
 import { fail, redirect } from '@sveltejs/kit';
 
+import { desc, eq, sql } from 'drizzle-orm';
 import { z } from 'zod';
 
 import type { Actions, PageServerLoad } from './$types';
-import { handleLoginRedirect } from '$lib/utils';
-import { deleteAccount, getAccountsByUser, selectAccount } from '$lib/account.server';
+
+import { deleteAccount, selectAccount } from '$lib/account.server';
+import { db } from '$lib/database/db';
+import { accountsTable, rankUpdatesTable } from '$lib/database/schema';
+import { handleLoginRedirect, jsonParse } from '$lib/utils';
+
+async function getRankUpdate(rankUpdateId: string) {
+	const [rankUpdate] = await db
+		.select()
+		.from(rankUpdatesTable)
+		.where(eq(rankUpdatesTable.id, rankUpdateId))
+		.all();
+
+	return rankUpdate;
+}
+
+async function getAccountsByUser(userId: string) {
+	const rankUpdates = db
+		.select({ id: rankUpdatesTable.id, accountId: rankUpdatesTable.accountId })
+		.from(rankUpdatesTable)
+		.groupBy(rankUpdatesTable.accountId, rankUpdatesTable.role, rankUpdatesTable.modality)
+		.orderBy(desc(rankUpdatesTable.time))
+		.as('rankUpdates');
+
+	const accounts = await db
+		.select({
+			id: accountsTable.id,
+			battleTag: accountsTable.battleTag,
+			selected: accountsTable.selected,
+			rankUpdates: sql<string | null>`json_group_array(${rankUpdates.id})`,
+		})
+		.from(accountsTable)
+		.leftJoin(rankUpdates, eq(rankUpdates.accountId, accountsTable.id))
+		.where(
+			eq(accountsTable.userId, userId)
+		)
+		.groupBy(accountsTable.id)
+		.all();
+
+	return accounts.map(account => ({
+		...account,
+		rankUpdates: jsonParse<string[]>(account.rankUpdates ?? '[]').map(getRankUpdate),
+	}));
+}
 
 export const load = (async (event) => {
 	if (!event.locals.user) {

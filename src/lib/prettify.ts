@@ -1,5 +1,5 @@
 import type { HeroRole } from '$lib/data/heroes';
-import type { MatchResult, SkillTier } from '$lib/database/schema';
+import type { MatchResult, SeasonalUpdate, SkillTier } from '$lib/database/schema';
 import type { MapType } from '$lib/data/maps';
 
 export const heroRole = {
@@ -21,6 +21,11 @@ export const mapType = {
 	escort: 'Escort',
 	push: 'Push'
 } satisfies Record<MapType, string>;
+
+export const seasonalUpdate = {
+	start: 'Start',
+	end: 'End'
+} satisfies Record<SeasonalUpdate, string>;
 
 export const skillTier = {
 	bronze: 'Bronze',
