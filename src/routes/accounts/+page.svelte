@@ -1,10 +1,13 @@
 <script>
-	import { Plus, User, CheckCircle, Trash2, Ban } from 'lucide-svelte';
+	import { Plus, Ban } from 'lucide-svelte';
 	import RankUpdate from '$lib/components/RankUpdate.svelte';
+	import { enhance } from '$app/forms';
 
 	export let data;
 
 	const missingSelected = data.accounts.every((account) => !account.selected);
+
+	let showPercentage = false;
 </script>
 
 <svelte:head>
@@ -30,52 +33,45 @@
 	</div>
 {/if}
 
-<div class="card w-full p-5">
-	<ul class="list">
-		{#each data.accounts as account}
-			<li class="pb-3 last:pb-0">
-				<span class="badge variant-filled">
-					<User size={20} />
-				</span>
-				<div class="grid h-full w-full grid-cols-[auto_1fr] gap-5">
-					<div class="flex items-center gap-2">
-						<div>
-							{account.battleTag}
-						</div>
-						{#if account.selected}
-							<span class="badge variant-filled-primary">Selected</span>
-						{/if}
+<div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+	{#each data.accounts as account}
+		<div class="card card-hover grid grid-rows-[auto_1fr_auto] overflow-hidden">
+			<header class="card-header flex gap-2">
+				<span>{account.battleTag}</span>
+				{#if account.selected}
+					<span class="badge variant-filled-success">Selected</span>
+				{/if}
+			</header>
+
+			<div class="m-2 rounded-lg bg-surface-200 p-2">
+				<span class="h4 mb-2">Ranks</span>
+				{#if !account.rankUpdates.length}
+					<div class="grid grid-cols-1 place-content-end gap-1">
+						Currently there is no rank for this account!
 					</div>
-					<div class="flex gap-3">
-						{#each account.rankUpdates as prom}
-							{#await prom then rankUpdate}
-								{#if rankUpdate}
-									<RankUpdate {rankUpdate} showRole />
-								{/if}
-							{/await}
+				{:else}
+					<div class="grid grid-cols-2 place-content-end gap-1">
+						{#each account.rankUpdates as rankUpdate}
+							<RankUpdate {rankUpdate} showRole />
 						{/each}
 					</div>
-				</div>
-				<form method="post" class="flex gap-2">
-					<input type="hidden" name="accountId" value={account.id} />
-					<button
-						type="submit"
-						formaction="?/select"
-						title="Select account"
-						class="btn-icon variant-soft-secondary"
-					>
-						<CheckCircle size={20} />
-					</button>
-					<button
-						type="submit"
-						formaction="?/delete"
-						title="Delete account"
-						class="btn-icon variant-soft-error"
-					>
-						<Trash2 size={20} />
-					</button>
-				</form>
-			</li>
-		{/each}
-	</ul>
+				{/if}
+			</div>
+
+			<form method="post" use:enhance class="card-footer flex w-full justify-end gap-2">
+				<input type="hidden" name="accountId" value={account.id} />
+				<button type="submit" formaction="?/delete" class="btn btn-sm variant-soft-error">
+					Delete
+				</button>
+
+				<button
+					type="submit"
+					formaction="?/select"
+					class="btn btn-sm variant-soft-secondary"
+				>
+					Select
+				</button>
+			</form>
+		</div>
+	{/each}
 </div>

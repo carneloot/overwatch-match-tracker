@@ -25,7 +25,7 @@ async function getAccountsByUser(userId: string) {
 		.select({ id: rankUpdatesTable.id, accountId: rankUpdatesTable.accountId })
 		.from(rankUpdatesTable)
 		.groupBy(rankUpdatesTable.accountId, rankUpdatesTable.role, rankUpdatesTable.modality)
-		.orderBy(desc(rankUpdatesTable.time))
+		.orderBy(desc(rankUpdatesTable.time), rankUpdatesTable.role, rankUpdatesTable.modality)
 		.as('rankUpdates');
 
 	const accounts = await db
@@ -43,9 +43,25 @@ async function getAccountsByUser(userId: string) {
 		.groupBy(accountsTable.id)
 		.all();
 
-	return accounts.map(account => ({
-		...account,
-		rankUpdates: jsonParse<string[]>(account.rankUpdates ?? '[]').map(getRankUpdate),
+	return Promise.all(accounts.map(async account => {
+		const rankUpdates = await Promise.all(jsonParse<string[]>(account.rankUpdates ?? '[]').filter(Boolean).map(getRankUpdate))
+
+		rankUpdates.sort((a, b) => {
+			if (!a.role) {
+				return -1;
+			}
+
+			if (!b.role) {
+				return 1;
+			}
+
+			return a.role.localeCompare(b.role)
+		});
+
+		return {
+			...account,
+			rankUpdates,
+		};
 	}));
 }
 

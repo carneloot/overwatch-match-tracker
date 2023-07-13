@@ -1,15 +1,15 @@
 <script lang="ts">
-	import type { RankUpdate } from '../database/schema';
+	import type { RankUpdate } from '$lib/database/schema';
 	import { heroRole, skillTier } from '$lib/prettify';
-	import { cn } from '../utils';
-	import { seasons } from '../data/seasons';
+	import { seasons } from '$lib/data/seasons';
+	import { cn } from '$lib/utils';
 
 	export let rankUpdate: RankUpdate;
 
 	export let showRole = false;
 	export let showPercentage = false;
 
-	const classes = cn('btn btn-sm', {
+	const classes = cn('btn btn-sm cursor-pointer', {
 		'variant-filled-bronze': rankUpdate.tier === 'bronze',
 		'variant-filled-silver': rankUpdate.tier === 'silver',
 		'variant-filled-gold': rankUpdate.tier === 'gold',
@@ -21,7 +21,7 @@
 	});
 </script>
 
-<div class="flex cursor-pointer items-center gap-1">
+<div class="flex flex-col gap-1 whitespace-nowrap">
 	{#if showRole}
 		{#if rankUpdate.role}
 			{heroRole[rankUpdate.role] + ':'}
