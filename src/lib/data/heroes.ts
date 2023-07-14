@@ -245,4 +245,4 @@ const OVERWATCH_HEROES: [OverwatchHeroSlug, ...OverwatchHeroSlug[]] = [
 	allHeroSlugs[0],
 	...allHeroSlugs.slice(1)
 ];
-export const OverwatchHeroEnum = z.enum(OVERWATCH_HEROES);
+export const OverwatchHeroEnum = z.enum(OVERWATCH_HEROES, { required_error: '' });
