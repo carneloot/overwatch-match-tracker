@@ -1,19 +1,21 @@
-<script lang='ts'>
+<script lang="ts">
 	import { Plus } from 'lucide-svelte';
 
 	import { Paginator } from '@skeletonlabs/skeleton';
 	import type { PaginatorProps } from '@skeletonlabs/skeleton/dist/components/Paginator/Paginator.svelte';
 
+	import { formatDistanceToNowStrict } from 'date-fns';
+
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 
-	import { matchResult } from '$lib/prettify.js';
-	import RankUpdate from '$lib/components/RankUpdate.svelte';
+	import { matchResult, skillTier } from '$lib/prettify';
+	import { maps } from '$lib/data/maps';
+	import { seasons } from '$lib/data/seasons';
+	import { cn } from '$lib/utils';
+	import { heroes } from '../../lib/data/heroes.js';
 
 	export let data;
-
-	// TODO: locale
-	const formatter = new Intl.DateTimeFormat('en-US', { dateStyle: 'short', timeStyle: 'short' });
 
 	let paginatorSettings = {
 		size: data.total,
@@ -39,81 +41,114 @@
 	<title>Matches</title>
 </svelte:head>
 
-<div class='mb-6 flex justify-between'>
-	<h2 class='h2'>Matches</h2>
-	<a href='/matches/new' class='btn variant-filled-primary text-white'>
+<div class="mb-6 flex justify-between">
+	<h2 class="h2">Matches</h2>
+	<a href="/matches/new" class="btn variant-filled-primary text-white">
 		<span><Plus size={20} /></span>
 		<span>New Match</span>
 	</a>
 </div>
 
-<table class='mb-4 table w-full'>
-	<thead>
-	<tr>
-		<th>Result</th>
-		<th>Modality</th>
-		<th>Map</th>
-		<th>Heroes</th>
-		<th>Group</th>
-		<th>Time</th>
-		<th>Rank Update</th>
-	</tr>
-	</thead>
-
-	<tbody>
-	{#if data.total === 0}
-		<tr>
-			<td colspan='8' class='text-center'>
-				There are no matches for the current account.
-				<br />Add matches clicking on the "New Match" button.
-			</td>
-		</tr>
-	{/if}
+<div class="mb-6">
 	{#each data.matches as match}
-		<tr>
-			<td class='!align-middle'>
-				<span
-					class='badge w-6/12'
-					class:variant-filled-success={match.result === 'win'}
-					class:variant-filled-warning={match.result === 'draw'}
-					class:variant-filled-error={match.result === 'lose'}
-				>{matchResult[match.result]}</span
+		{@const map = maps[match.map]}
+		{@const modality = seasons[match.season].modalities[match.modality]}
+		<div
+			class="mb-4 grid h-20 w-full grid-cols-[2fr_1fr_0.7fr_1fr_1fr_1fr_auto] gap-5 overflow-hidden rounded-lg bg-surface-100 uppercase"
+		>
+			<!-- Map -->
+			<div
+				class={cn('relative h-full overflow-hidden border-l-4', {
+					'border-success-500': match.result === 'win',
+					'border-warning-500': match.result === 'draw',
+					'border-error-500': match.result === 'lose'
+				})}
+			>
+				<div
+					class="absolute left-0 top-0 flex h-full w-full items-center bg-black/30 pl-6 font-sans text-xl font-bold tracking-wider text-white"
 				>
-			</td>
-			<td class='!align-middle'>{match.modality}</td>
-			<td class='!align-middle'>{match.map}</td>
-			<td class='!align-middle'>{match.heroes?.join(', ') ?? ''}</td>
-			<td class='!align-middle'>
+					{map.name}
+				</div>
+				<img
+					class="h-full w-full object-cover"
+					src={map.image}
+					alt={`Image of ${map.name}`}
+				/>
+			</div>
+
+			<!-- Modality -->
+			<div class="flex flex-col justify-center text-lg font-medium">
+				{modality}
+			</div>
+
+			<!-- Time -->
+			<div class="flex flex-col items-end justify-center text-right">
+				{formatDistanceToNowStrict(match.time, { addSuffix: true })}
+			</div>
+
+			<!-- Heroes -->
+			<div class="flex flex-col items-end justify-center text-right">
+				{match.heroes.map((slug) => heroes[slug].name).join(', ')}
+			</div>
+
+			<!-- Group -->
+			<div class="flex flex-col items-end justify-center text-right">
 				{#if match.accounts.length}
 					{match.accounts.join(', ')}
 				{:else}
 					Solo queue
 				{/if}
-			</td>
-			<td class='!align-middle'>{formatter.format(match.time)}</td>
-			<td>
-				{#if match.rankUpdate}
-					<RankUpdate rankUpdate={match.rankUpdate} />
-				{:else}
-					<a
-						href={`/rank-updates/new?matchId=${match.id}`}
-						title='Create Rank Update'
-						class='btn btn-sm variant-ghost-primary'
-					>
-						<span><Plus size={20} /></span>
-						<span>Create</span>
-					</a>
-				{/if}
-			</td>
-		</tr>
+			</div>
+
+			<!-- Match Result -->
+			<div
+				class="group relative flex flex-row items-center justify-center overflow-hidden text-center"
+			>
+				<div
+					class={cn(
+						'absolute z-10 w-full cursor-pointer rounded-lg px-4 py-2 transition-transform group-hover:translate-x-[-95%]',
+						{
+							'bg-success-500': match.result === 'win',
+							'bg-warning-500': match.result === 'draw',
+							'bg-error-500': match.result === 'lose'
+						}
+					)}
+				>
+					{matchResult[match.result]}
+				</div>
+				<a
+					href={match.rankUpdate ? '' : `/rank-updates/new?matchId=${match.id}`}
+					class={cn(
+						'absolute flex w-full translate-x-[100%] items-center justify-center gap-2 rounded-lg px-4 py-2 transition-transform',
+						'group-hover:translate-x-0',
+						{
+							'bg-secondary-300': !match.rankUpdate,
+							'bg-bronze': match.rankUpdate?.tier === 'bronze',
+							'bg-silver': match.rankUpdate?.tier === 'silver',
+							'bg-gold': match.rankUpdate?.tier === 'gold',
+							'bg-platinum': match.rankUpdate?.tier === 'platinum',
+							'bg-diamond': match.rankUpdate?.tier === 'diamond',
+							'bg-master': match.rankUpdate?.tier === 'master',
+							'bg-grandmaster': match.rankUpdate?.tier === 'grandmaster',
+							'bg-top500': match.rankUpdate?.tier === 'top500'
+						}
+					)}
+				>
+					{#if match.rankUpdate}
+						{`${skillTier[match.rankUpdate.tier]} ${match.rankUpdate.division}`}
+					{:else}
+						<Plus size={20} />New rank
+					{/if}
+				</a>
+			</div>
+		</div>
 	{/each}
-	</tbody>
-</table>
+</div>
 
 <Paginator
 	bind:settings={paginatorSettings}
 	on:page={onPageChange}
 	showNumerals
 	maxNumerals={2}
-	justify='justify-center'
+	justify="justify-center"
 />

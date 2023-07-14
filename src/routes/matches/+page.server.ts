@@ -3,13 +3,12 @@ import { and, desc, eq, sql } from 'drizzle-orm';
 
 import type { PageServerLoad } from './$types';
 
-import { getSelectedAccountByUser } from '$lib/account.server';
-import { heroes, type OverwatchHeroSlug } from '$lib/data/heroes';
-import { maps } from '$lib/data/maps';
-import { currentSeason, seasons, type OverwatchSeasonSlug } from '$lib/data/seasons';
-import { db } from '$lib/database/db';
 import { accountsMatchesTable, accountsTable, heroesMatchesTable, matchesTable, rankUpdatesTable } from '$lib/database/schema';
+import { currentSeason, type OverwatchSeasonSlug } from '$lib/data/seasons';
+import { getSelectedAccountByUser } from '$lib/account.server';
 import { handleLoginRedirect, jsonParse } from '$lib/utils';
+import type { OverwatchHeroSlug } from '$lib/data/heroes';
+import { db } from '$lib/database/db';
 
 type GetMatchesForDisplay = {
 	accountId: string;
@@ -27,6 +26,7 @@ async function getMatches({ accountId, season, limit, skip }: GetMatchesForDispl
 	const matches = await db
 		.select({
 			id: matchesTable.id,
+			season: matchesTable.season,
 			modality: matchesTable.modality,
 			time: matchesTable.time,
 			result: matchesTable.result,
@@ -54,9 +54,7 @@ async function getMatches({ accountId, season, limit, skip }: GetMatchesForDispl
 
 	return matches.map(match => ({
 		...match,
-		modality: seasons[season].modalities[match.modality],
-		map: maps[match.map].name,
-		heroes: jsonParse<OverwatchHeroSlug[]>(match.heroes).map(slug => heroes[slug].name),
+		heroes: jsonParse<OverwatchHeroSlug[]>(match.heroes),
 		accounts: jsonParse<string[]>(match.accounts).filter(Boolean)
 	}));
 }

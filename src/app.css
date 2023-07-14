@@ -103,3 +103,44 @@ body {
 	--color-top500-800: 147 133 63; /* ⬅ #93853f */
 	--color-top500-900: 120 108 51; /* ⬅ #786c33 */
 }
+
+.variant-filled-bronze {
+	--tw-bg-opacity: 1;
+	background-color: rgb(var(--color-bronze-500) / var(--tw-bg-opacity));
+	color: rgb(var(--on-bronze));
+}
+.variant-filled-silver {
+	--tw-bg-opacity: 1;
+	background-color: rgb(var(--color-silver-500) / var(--tw-bg-opacity));
+	color: rgb(var(--on-silver));
+}
+.variant-filled-gold {
+	--tw-bg-opacity: 1;
+	background-color: rgb(var(--color-gold-500) / var(--tw-bg-opacity));
+	color: rgb(var(--on-gold));
+}
+.variant-filled-platinum {
+	--tw-bg-opacity: 1;
+	background-color: rgb(var(--color-platinum-500) / var(--tw-bg-opacity));
+	color: rgb(var(--on-platinum));
+}
+.variant-filled-diamond {
+	--tw-bg-opacity: 1;
+	background-color: rgb(var(--color-diamond-500) / var(--tw-bg-opacity));
+	color: rgb(var(--on-diamond));
+}
+.variant-filled-master {
+	--tw-bg-opacity: 1;
+	background-color: rgb(var(--color-master-500) / var(--tw-bg-opacity));
+	color: rgb(var(--on-master));
+}
+.variant-filled-grandmaster {
+	--tw-bg-opacity: 1;
+	background-color: rgb(var(--color-grandmaster-500) / var(--tw-bg-opacity));
+	color: rgb(var(--on-grandmaster));
+}
+.variant-filled-top500 {
+	--tw-bg-opacity: 1;
+	background-color: rgb(var(--color-top500-500) / var(--tw-bg-opacity));
+	color: rgb(var(--on-top500));
+}
