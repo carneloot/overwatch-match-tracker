@@ -1,14 +1,72 @@
 import { fail, redirect } from '@sveltejs/kit';
 
 import { superValidate } from 'sveltekit-superforms/server';
+import { v4 as uuid } from 'uuid';
+import { z } from 'zod';
 
 import type { Actions, PageServerLoad } from './$types';
 
 import * as constants from '$lib/constants';
 
+import { MatchResult, matchesTable, accountsMatchesTable, heroesMatchesTable, SkillTier } from '$lib/database/schema';
 import { getAccountsByUser, getSelectedAccountByUser } from '$lib/account.server';
 import { handleLoginRedirect } from '$lib/utils';
-import { createNewMatch, type NewMatch, newMatchSchema } from '$lib/match.server';
+import { OverwatchHeroEnum } from '$lib/data/heroes';
+import { OverwatchMapEnum } from '$lib/data/maps';
+import { currentSeason } from '$lib/data/seasons';
+import { db } from '$lib/database/db';
+
+const newMatchSchema = z.object({
+	accountId: z.string().uuid(),
+	map: OverwatchMapEnum,
+	modality: z.string(),
+	heroes: OverwatchHeroEnum
+		.array()
+		.min(1)
+		.max(3, 'You can only choose up to three heroes.'),
+	accounts: z.string().array().transform(acc => acc.filter(value => value !== 'none')),
+	result: MatchResult,
+	time: z
+		.coerce.date({
+			required_error: 'Please select a date and time',
+			invalid_type_error: 'That\'s not a date!'
+		})
+});
+type NewMatch = z.infer<typeof newMatchSchema>;
+
+async function createNewMatch(newMatch: NewMatch) {
+	const newId = uuid();
+
+	await db.transaction(async tx => {
+		await tx
+			.insert(matchesTable)
+			.values({
+				id: newId,
+				modality: newMatch.modality,
+				accountId: newMatch.accountId,
+				map: newMatch.map,
+				time: newMatch.time,
+				season: currentSeason.slug,
+				result: newMatch.result,
+			})
+			.run();
+
+		if (newMatch.accounts.length) {
+			await tx
+				.insert(accountsMatchesTable)
+				.values(newMatch.accounts.map(accountId => ({ id: uuid(), matchId: newId, accountId })))
+				.run();
+		}
+
+		await tx
+			.insert(heroesMatchesTable)
+			.values(newMatch.heroes.map(hero => ({ id: uuid(), matchId: newId, hero })))
+			.run();
+
+	});
+
+}
+
 
 export const load = (async (event) => {
 	if (!event.locals.user) {
@@ -25,6 +83,7 @@ export const load = (async (event) => {
 		time: currentTime,
 		accountId: userAccount.id,
 		accounts: [],
+		result: 'win',
 		...(keepValuesCookie ?? {})
 	} satisfies Partial<NewMatch>;
 

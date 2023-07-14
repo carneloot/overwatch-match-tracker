@@ -49,6 +49,8 @@ export const load = (async (event) => {
 		matchId: matchId ?? undefined,
 		time: match?.time ?? new Date(),
 		modality: match?.modality ?? undefined,
+		division: 3,
+		percentage: 50,
 		role,
 	} satisfies Partial<NewRankUpdate>;
 

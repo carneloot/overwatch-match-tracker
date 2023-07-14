@@ -1,4 +1,6 @@
-<script lang='ts'>
+<script lang="ts">
+	import { RadioGroup, RadioItem } from '@skeletonlabs/skeleton';
+
 	import { superForm } from 'sveltekit-superforms/client';
 
 	import { dateToDatetimeLocal } from '$lib/utils';
@@ -6,7 +8,7 @@
 	import { mapsByType } from '$lib/data/maps';
 	import { currentSeason } from '$lib/data/seasons';
 	import { matchResult } from '$lib/prettify';
-	import { heroRole, mapType } from '$lib/prettify.js';
+	import { heroRole, mapType } from '$lib/prettify';
 
 	export let data;
 
@@ -17,23 +19,27 @@
 	<title>New Match</title>
 </svelte:head>
 
-<h2 class='h2 mb-5'>New Match</h2>
+<h2 class="h2 mb-5">New Match</h2>
 
-<form method='POST' class='w-full p-6 card' use:enhance>
-
-	<div class='mb-3 grid sm:grid-cols-2 gap-3'>
-		<label class='label'>
+<form method="POST" class="card w-full p-6" use:enhance>
+	<div class="mb-3 grid gap-3 lg:grid-cols-2">
+		<label class="label">
 			<span>Modality</span>
-			<select name='modality' class='select' bind:value={$form.modality} {...$constraints.modality}>
-				{#each Object.entries(currentSeason.modalities) as [ slug, name ]}
+			<select
+				name="modality"
+				class="select"
+				bind:value={$form.modality}
+				{...$constraints.modality}
+			>
+				{#each Object.entries(currentSeason.modalities) as [slug, name]}
 					<option value={slug}>{name}</option>
 				{/each}
 			</select>
 		</label>
 
-		<label class='label'>
+		<label class="label">
 			<span>Map</span>
-			<select name='map' class='select' bind:value={$form.map} {...$constraints.map}>
+			<select name="map" class="select" bind:value={$form.map} {...$constraints.map}>
 				{#each mapsByType as type}
 					<optgroup label={mapType[type.name]}>
 						{#each type.values as map}
@@ -44,9 +50,15 @@
 			</select>
 		</label>
 
-		<label class='label'>
+		<label class="label">
 			<span>Heroes</span>
-			<select name='heroes' multiple class='select' bind:value={$form.heroes} {...$constraints.heroes}>
+			<select
+				name="heroes"
+				multiple
+				class="select"
+				bind:value={$form.heroes}
+				{...$constraints.heroes}
+			>
 				{#each heroesByRole as role}
 					<optgroup label={heroRole[role.name]}>
 						{#each role.values as hero}
@@ -56,14 +68,20 @@
 				{/each}
 			</select>
 			{#if $errors.heroes}
-				<small class='text-error-500'>{$errors.heroes?._errors?.[0] ?? ''}</small>
+				<small class="text-error-500">{$errors.heroes?._errors?.[0] ?? ''}</small>
 			{/if}
 		</label>
 
-		<label class='label'>
+		<label class="label">
 			<span>Accounts</span>
-			<select name='accounts' multiple class='select' bind:value={$form.accounts} {...$constraints.accounts}>
-				<option value='none'>Solo Queue</option>
+			<select
+				name="accounts"
+				multiple
+				class="select"
+				bind:value={$form.accounts}
+				{...$constraints.accounts}
+			>
+				<option value="none">Solo Queue</option>
 				{#each data.availableAccounts as account}
 					{#if account.id !== $form?.accountId}
 						<option value={account.id}>{account.battleTag}</option>
@@ -72,33 +90,64 @@
 			</select>
 		</label>
 
-		<label class='label'>
-			<span>Result</span>
-			<select
-				name='result'
-				class='select'
-				bind:value={$form.result}
-				{...$constraints.result}
-			>
-				<option value='win' class='text-success-700'>{matchResult['win']}</option>
-				<option value='draw' class='text-warning-700'>{matchResult['draw']}</option>
-				<option value='lose' class='text-error-700'>{matchResult['lose']}</option>
-			</select>
-		</label>
-
-		<label class='label'>
+		<label class="label">
 			<span>Time</span>
 			<input
-				type='datetime-local'
-				class='input'
-				name='time'
+				type="datetime-local"
+				class="input !mt-2 !rounded-container-token"
+				name="time"
 				value={dateToDatetimeLocal($form.time)}
+				on:input={(e) => ($form.time = new Date(e.currentTarget.value))}
 				{...$constraints.time}
+			/>
+		</label>
+
+		<!-- svelte-ignore a11y-label-has-associated-control -->
+		<label class="label">
+			<span>Result</span>
+			<RadioGroup
+				rounded="rounded-container-token"
+				class="w-full"
+				display="inline-grid grid-cols-3"
 			>
+				<RadioItem
+					active="variant-filled-success"
+					hover="hover:variant-soft-success"
+					bind:group={$form.result}
+					name="result"
+					value="win"
+				>
+					{matchResult['win']}
+				</RadioItem>
+				<RadioItem
+					active="variant-filled-warning"
+					hover="hover:variant-soft-warning"
+					bind:group={$form.result}
+					name="result"
+					value="draw"
+				>
+					{matchResult['draw']}
+				</RadioItem>
+				<RadioItem
+					active="variant-filled-error"
+					hover="hover:variant-soft-error"
+					bind:group={$form.result}
+					name="result"
+					value="lose"
+				>
+					{matchResult['lose']}
+				</RadioItem>
+			</RadioGroup>
 		</label>
 	</div>
-	<div class='flex flex-row justify-end'>
-		<input type='hidden' name='accountId' bind:value={$form.accountId}>
-		<button type='submit' class='btn variant-filled-primary'>Create</button>
+	<div class="flex flex-row justify-end">
+		<input type="hidden" name="accountId" bind:value={$form.accountId} />
+		<button type="submit" class="btn variant-filled-primary">Create</button>
 	</div>
 </form>
+
+<style>
+	.label > span {
+		@apply block;
+	}
+</style>

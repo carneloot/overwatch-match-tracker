@@ -1,10 +1,14 @@
 <script lang="ts">
+	import { RadioGroup, RadioItem } from '@skeletonlabs/skeleton';
+
 	import { superForm } from 'sveltekit-superforms/client';
 
-	import { heroRole, seasonalUpdate, skillTier } from '$lib/prettify';
+	import SkillTierPicker from '$lib/components/SkillTierPicker.svelte';
+	import SkillDivisionPicker from '$lib/components/SkillDivisionPicker.svelte';
+
+	import { heroRole, seasonalUpdate } from '$lib/prettify';
 	import { currentSeason } from '$lib/data/seasons';
 	import { dateToDatetimeLocal } from '$lib/utils';
-	import { SkillTier } from '$lib/database/schema';
 
 	export let data;
 
@@ -23,7 +27,7 @@
 <h2 class="h2 mb-5">New Rank Update</h2>
 
 <form method="POST" class="card w-full p-6">
-	<div class="mb-3 grid gap-3 sm:grid-cols-2">
+	<div class="mb-3 grid gap-3 lg:grid-cols-2">
 		{#if !$form.matchId}
 			<label class="label">
 				<span>Modality</span>
@@ -40,81 +44,91 @@
 				</select>
 			</label>
 
+			<!-- svelte-ignore a11y-label-has-associated-control -->
 			<label class="label">
 				<span>Seasonal Update</span>
-				<select
-					class="select"
-					name="seasonalUpdate"
-					aria-invalid={$errors.seasonalUpdate ? true : undefined}
-					bind:value={$form.seasonalUpdate}
-					{...$constraints.seasonalUpdate}
+				<RadioGroup
+					rounded="rounded-container-token"
+					class="w-full"
+					display="inline-grid grid-cols-2"
 				>
-					<option value="start">{seasonalUpdate['start']}</option>
-					<option value="end">{seasonalUpdate['end']}</option>
-				</select>
+					<RadioItem
+						bind:group={$form.seasonalUpdate}
+						name="seasonalUpdate"
+						value="start"
+					>
+						{seasonalUpdate['start']}
+					</RadioItem>
+					<RadioItem bind:group={$form.seasonalUpdate} name="seasonalUpdate" value="end">
+						{seasonalUpdate['end']}
+					</RadioItem>
+				</RadioGroup>
 			</label>
 
 			<label class="label">
 				<span>Time</span>
 				<input
 					type="datetime-local"
-					class="input"
+					class="input !mt-2 !rounded-container-token"
 					name="time"
 					value={dateToDatetimeLocal($form.time)}
+					on:input={(e) => ($form.time = new Date(e.currentTarget.value))}
 					{...$constraints.time}
 				/>
 			</label>
 
 			{#if $form.modality === 'role-queue'}
+				<!-- svelte-ignore a11y-label-has-associated-control -->
 				<label class="label">
 					<span>Role</span>
-					<select
-						class="select"
-						name="role"
-						bind:value={$form.role}
-						{...$constraints.role}
+					<RadioGroup
+						rounded="rounded-container-token"
+						class="w-full"
+						display="inline-grid grid-cols-3"
 					>
-						<option value="damage">{heroRole['damage']}</option>
-						<option value="support">{heroRole['support']}</option>
-						<option value="tank">{heroRole['tank']}</option>
-					</select>
+						<RadioItem bind:group={$form.role} name="role" value="damage">
+							{heroRole['damage']}
+						</RadioItem>
+						<RadioItem bind:group={$form.role} name="role" value="support">
+							{heroRole['support']}
+						</RadioItem>
+						<RadioItem bind:group={$form.role} name="role" value="tank">
+							{heroRole['tank']}
+						</RadioItem>
+					</RadioGroup>
 				</label>
 			{/if}
 		{/if}
 
+		<!-- svelte-ignore a11y-label-has-associated-control -->
 		<label class="label">
 			<span>Skill Tier</span>
-			<select class="select" name="tier" bind:value={$form.tier} {...$constraints.tier}>
-				{#each SkillTier.options as tier}
-					<option value={tier}>{skillTier[tier]}</option>
-				{/each}
-			</select>
+			<SkillTierPicker bind:value={$form.tier} name="tier" />
 		</label>
 
+		<!-- svelte-ignore a11y-label-has-associated-control -->
 		<label class="label">
 			<span>{$form.tier === 'top500' ? 'Position' : 'Division'}</span>
-			<input
-				type="number"
-				class="input"
+			<SkillDivisionPicker
 				name="division"
-				aria-invalid={$errors.division ? true : undefined}
 				bind:value={$form.division}
-				{...$constraints.division}
-				max={$form.tier === 'top500' ? 500 : 5}
+				isTop500={$form.tier === 'top500'}
 			/>
 		</label>
 
 		{#if hasPercentage}
 			<label class="label">
 				<span>Percentage</span>
-				<input
-					type="number"
-					class="input"
-					name="percentage"
-					aria-invalid={$errors.percentage ? true : undefined}
-					bind:value={$form.percentage}
-					{...$constraints.percentage}
-				/>
+				<div class="input-group input-group-divider grid-cols-[1fr_auto]">
+					<input
+						type="number"
+						name="percentage"
+						aria-invalid={$errors.percentage ? true : undefined}
+						bind:value={$form.percentage}
+						{...$constraints.percentage}
+					/>
+					<div class="input-group-shim">%</div>
+				</div>
 			</label>
 		{/if}
 	</div>
@@ -130,3 +144,9 @@
 		<button type="submit" class="btn variant-filled-primary">Create</button>
 	</div>
 </form>
+
+<style>
+	.label > span {
+		@apply block;
+	}
+</style>
