@@ -51,7 +51,7 @@
 </div>
 
 <div class="mb-6">
-	{#each data.matches as match}
+	{#each data.matches as match (match.id)}
 		{@const map = maps[match.map]}
 		{@const modality = seasons[match.season].modalities[match.modality]}
 		<div
