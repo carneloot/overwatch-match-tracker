@@ -6,11 +6,8 @@
 	<div class="flex flex-col">
 		<div class="flex flex-row items-center gap-2">
 			<p>
-				Made with ❤️ by <a
-					href="https://carneloot.com"
-					target="_blank"
-					class="text-tertiary-800 hover:text-tertiary-600">carneloot</a
-				>
+				Made with ❤️ by
+				<a href="https://carneloot.com" target="_blank" class="link">carneloot</a>
 				&copy; {new Date().getFullYear()}
 			</p>
 			<a
