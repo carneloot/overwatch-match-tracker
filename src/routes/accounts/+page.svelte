@@ -64,10 +64,6 @@
 					Delete
 				</button>
 
-				<a href="{`/accounts/${account.id}`}}" class="btn btn-sm variant-soft-warning">
-					Edit
-				</a>
-
 				<button
 					type="submit"
 					formaction="?/select"
