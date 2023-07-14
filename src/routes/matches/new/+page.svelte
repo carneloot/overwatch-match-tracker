@@ -3,6 +3,9 @@
 
 	import { superForm } from 'sveltekit-superforms/client';
 
+	import SkillDivisionPicker from '$lib/components/SkillDivisionPicker.svelte';
+	import SkillTierPicker from '$lib/components/SkillTierPicker.svelte';
+
 	import { dateToDatetimeLocal } from '$lib/utils';
 	import { heroesByRole } from '$lib/data/heroes';
 	import { mapsByType } from '$lib/data/maps';
@@ -138,6 +141,22 @@
 					{matchResult['lose']}
 				</RadioItem>
 			</RadioGroup>
+		</label>
+
+		<!-- svelte-ignore a11y-label-has-associated-control -->
+		<label class="label">
+			<span>Average Skill Tier</span>
+			<SkillTierPicker bind:value={$form.averageTier} name="averageTier" />
+		</label>
+
+		<!-- svelte-ignore a11y-label-has-associated-control -->
+		<label class="label">
+			<span>Average Division</span>
+			<SkillDivisionPicker
+				name="averageDivision"
+				bind:value={$form.averageDivision}
+				isTop500={$form.averageTier === 'top500'}
+			/>
 		</label>
 	</div>
 	<div class="flex flex-row justify-end">

@@ -26,6 +26,8 @@ const newMatchSchema = z.object({
 		.max(3, 'You can only choose up to three heroes.'),
 	accounts: z.string().array().transform(acc => acc.filter(value => value !== 'none')),
 	result: MatchResult,
+	averageTier: SkillTier.optional(),
+	averageDivision: z.number().int().min(1).max(500).optional(),
 	time: z
 		.coerce.date({
 			required_error: 'Please select a date and time',
@@ -48,6 +50,8 @@ async function createNewMatch(newMatch: NewMatch) {
 				time: newMatch.time,
 				season: currentSeason.slug,
 				result: newMatch.result,
+				averageTier: newMatch.averageTier,
+				averageDivision: newMatch.averageDivision
 			})
 			.run();
 

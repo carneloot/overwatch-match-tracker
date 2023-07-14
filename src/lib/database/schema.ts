@@ -73,7 +73,9 @@ export const matchesTable = sqliteTable(
 		season: text('season').notNull().$type<OverwatchSeasonSlug>(),
 		modality: text('modality').notNull(),
 		result: text('result').$type<MatchResult>().notNull(),
-		time: integer('time', { mode: 'timestamp' }).notNull()
+		time: integer('time', { mode: 'timestamp' }).notNull(),
+		averageTier: text('average_tier').$type<SkillTier>(),
+		averageDivision: integer('average_division'),
 	},
 	self => ({
 		accountIdIdx: index('accountIdIdx').on(self.accountId)
