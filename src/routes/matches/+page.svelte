@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Plus } from 'lucide-svelte';
 
+	import Img from '@zerodevx/svelte-img';
 	import { Paginator } from '@skeletonlabs/skeleton';
 	import type { PaginatorProps } from '@skeletonlabs/skeleton/dist/components/Paginator/Paginator.svelte';
 
@@ -69,7 +70,7 @@
 				>
 					{map.name}
 				</div>
-				<img
+				<Img
 					class="h-full w-full object-cover"
 					src={map.image}
 					alt={`Image of ${map.name}`}

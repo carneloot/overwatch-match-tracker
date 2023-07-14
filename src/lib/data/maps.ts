@@ -1,34 +1,34 @@
 import { groupByField } from '$lib/utils';
 import { z } from 'zod';
 
-import antarcticPeninsula from '$lib/assets/images/maps/antarctic-peninsula.webp'
-import blizzardWorld from '$lib/assets/images/maps/blizzard-world.webp';
-import busan from '$lib/assets/images/maps/busan.webp';
-import chateauGuillard from '$lib/assets/images/maps/chateau-guillard.webp';
-import circuitRoyal from '$lib/assets/images/maps/circuit-royal.webp';
-import colosseo from '$lib/assets/images/maps/colosseo.webp';
-import dorado from '$lib/assets/images/maps/dorado.webp';
-import eichenwalde from '$lib/assets/images/maps/eichenwalde.webp';
-import esperanca from '$lib/assets/images/maps/esperanca.webp';
-import havana from '$lib/assets/images/maps/havana.webp';
-import hollywood from '$lib/assets/images/maps/hollywood.webp';
-import ilios from '$lib/assets/images/maps/ilios.webp';
-import junkertown from '$lib/assets/images/maps/junkertown.webp';
-import kanezaka from '$lib/assets/images/maps/kanezaka.webp';
-import kingsRow from '$lib/assets/images/maps/kings-row.webp';
-import lijiangTower from '$lib/assets/images/maps/lijiang-tower.webp';
-import malevento from '$lib/assets/images/maps/malevento.webp';
-import midtown from '$lib/assets/images/maps/midtown.webp';
-import nepal from '$lib/assets/images/maps/nepal.webp';
-import newQueenStreet from '$lib/assets/images/maps/new-queen-street.webp';
-import numbani from '$lib/assets/images/maps/numbani.webp';
-import oasis from '$lib/assets/images/maps/oasis.webp';
-import paraiso from '$lib/assets/images/maps/paraiso.webp';
-import petra from '$lib/assets/images/maps/petra.webp';
-import rialto from '$lib/assets/images/maps/rialto.webp';
-import route66 from '$lib/assets/images/maps/route-66.webp';
-import shambaliMonastery from '$lib/assets/images/maps/shambali-monastery.webp';
-import watchpointGibraltar from '$lib/assets/images/maps/watchpoint-gibraltar.webp';
+import antarcticPeninsula from '$lib/assets/images/maps/antarctic-peninsula.webp?run'
+import blizzardWorld from '$lib/assets/images/maps/blizzard-world.webp?run';
+import busan from '$lib/assets/images/maps/busan.webp?run';
+import chateauGuillard from '$lib/assets/images/maps/chateau-guillard.webp?run';
+import circuitRoyal from '$lib/assets/images/maps/circuit-royal.webp?run';
+import colosseo from '$lib/assets/images/maps/colosseo.webp?run';
+import dorado from '$lib/assets/images/maps/dorado.webp?run';
+import eichenwalde from '$lib/assets/images/maps/eichenwalde.webp?run';
+import esperanca from '$lib/assets/images/maps/esperanca.webp?run';
+import havana from '$lib/assets/images/maps/havana.webp?run';
+import hollywood from '$lib/assets/images/maps/hollywood.webp?run';
+import ilios from '$lib/assets/images/maps/ilios.webp?run';
+import junkertown from '$lib/assets/images/maps/junkertown.webp?run';
+import kanezaka from '$lib/assets/images/maps/kanezaka.webp?run';
+import kingsRow from '$lib/assets/images/maps/kings-row.webp?run';
+import lijiangTower from '$lib/assets/images/maps/lijiang-tower.webp?run';
+import malevento from '$lib/assets/images/maps/malevento.webp?run';
+import midtown from '$lib/assets/images/maps/midtown.webp?run';
+import nepal from '$lib/assets/images/maps/nepal.webp?run';
+import newQueenStreet from '$lib/assets/images/maps/new-queen-street.webp?run';
+import numbani from '$lib/assets/images/maps/numbani.webp?run';
+import oasis from '$lib/assets/images/maps/oasis.webp?run';
+import paraiso from '$lib/assets/images/maps/paraiso.webp?run';
+import petra from '$lib/assets/images/maps/petra.webp?run';
+import rialto from '$lib/assets/images/maps/rialto.webp?run';
+import route66 from '$lib/assets/images/maps/route-66.webp?run';
+import shambaliMonastery from '$lib/assets/images/maps/shambali-monastery.webp?run';
+import watchpointGibraltar from '$lib/assets/images/maps/watchpoint-gibraltar.webp?run';
 
 export type MapType = 'control' | 'hybrid' | 'escort' | 'deathmatch' | 'push';
 
