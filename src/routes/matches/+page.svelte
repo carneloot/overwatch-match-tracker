@@ -51,6 +51,13 @@
 </div>
 
 <div class="mb-6">
+	{#if data.total === 0}
+		<div class="p-4 text-center">
+			There are no matches for the current account.
+			<br />Add matches clicking on the "New Match" button.
+		</div>
+	{/if}
+
 	{#each data.matches as match (match.id)}
 		{@const map = maps[match.map]}
 		{@const modality = seasons[match.season].modalities[match.modality]}
@@ -146,10 +153,12 @@
 	{/each}
 </div>
 
-<Paginator
-	bind:settings={paginatorSettings}
-	on:page={onPageChange}
-	showNumerals
-	maxNumerals={2}
-	justify="justify-center"
-/>
+{#if data.total !== 0}
+	<Paginator
+		bind:settings={paginatorSettings}
+		on:page={onPageChange}
+		showNumerals
+		maxNumerals={2}
+		justify="justify-center"
+	/>
+{/if}
