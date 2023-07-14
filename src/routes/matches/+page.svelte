@@ -14,7 +14,7 @@
 	import { maps } from '$lib/data/maps';
 	import { seasons } from '$lib/data/seasons';
 	import { cn } from '$lib/utils';
-	import { heroes } from '../../lib/data/heroes.js';
+	import { heroes } from '$lib/data/heroes';
 
 	export let data;
 
@@ -116,9 +116,9 @@
 					class={cn(
 						'absolute z-10 w-full cursor-pointer rounded-lg px-4 py-2 transition-transform group-hover:translate-x-[-95%]',
 						{
-							'bg-success-500': match.result === 'win',
-							'bg-warning-500': match.result === 'draw',
-							'bg-error-500': match.result === 'lose'
+							'variant-filled-success': match.result === 'win',
+							'variant-filled-warning': match.result === 'draw',
+							'variant-filled-error': match.result === 'lose'
 						}
 					)}
 				>
@@ -127,18 +127,18 @@
 				<a
 					href={match.rankUpdate ? '' : `/rank-updates/new?matchId=${match.id}`}
 					class={cn(
-						'absolute flex w-full translate-x-[100%] items-center justify-center gap-2 rounded-lg px-4 py-2 transition-transform',
+						'absolute flex w-full translate-x-[100%] items-center justify-center gap-2 whitespace-nowrap rounded-lg px-4 py-2 transition-transform',
 						'group-hover:translate-x-0',
 						{
-							'bg-secondary-300': !match.rankUpdate,
-							'bg-bronze': match.rankUpdate?.tier === 'bronze',
-							'bg-silver': match.rankUpdate?.tier === 'silver',
-							'bg-gold': match.rankUpdate?.tier === 'gold',
-							'bg-platinum': match.rankUpdate?.tier === 'platinum',
-							'bg-diamond': match.rankUpdate?.tier === 'diamond',
-							'bg-master': match.rankUpdate?.tier === 'master',
-							'bg-grandmaster': match.rankUpdate?.tier === 'grandmaster',
-							'bg-top500': match.rankUpdate?.tier === 'top500'
+							'variant-soft-secondary': !match.rankUpdate,
+							'variant-filled-bronze': match.rankUpdate?.tier === 'bronze',
+							'variant-filled-silver': match.rankUpdate?.tier === 'silver',
+							'variant-filled-gold': match.rankUpdate?.tier === 'gold',
+							'variant-filled-platinum': match.rankUpdate?.tier === 'platinum',
+							'variant-filled-diamond': match.rankUpdate?.tier === 'diamond',
+							'variant-filled-master': match.rankUpdate?.tier === 'master',
+							'variant-filled-grandmaster': match.rankUpdate?.tier === 'grandmaster',
+							'variant-filled-top500': match.rankUpdate?.tier === 'top500'
 						}
 					)}
 				>

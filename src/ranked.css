@@ -1,0 +1,213 @@
+:root {
+	/* =~= Theme On-X Colors =~= */
+	--on-bronze: 255 255 255;
+	--on-silver: 255 255 255;
+	--on-gold: 0 0 0;
+	--on-platinum: 0 0 0;
+	--on-diamond: 0 0 0;
+	--on-master: 0 0 0;
+	--on-grandmaster: 0 0 0;
+	--on-top500: 0 0 0;
+}
+
+@tailwind components;
+
+@layer components {
+	/* Outline */
+	.variant-outline-bronze {
+		@apply ring-[1px] ring-inset ring-bronze-500 dark:ring-bronze-500;
+	}
+
+	.variant-outline-silver {
+		@apply ring-[1px] ring-inset ring-silver-500 dark:ring-silver-500;
+	}
+
+	.variant-outline-gold {
+		@apply ring-[1px] ring-inset ring-gold-500 dark:ring-gold-500;
+	}
+
+	.variant-outline-platinum {
+		@apply ring-[1px] ring-inset ring-platinum-500 dark:ring-platinum-500;
+	}
+
+	.variant-outline-diamond {
+		@apply ring-[1px] ring-inset ring-diamond-500 dark:ring-diamond-500;
+	}
+
+	.variant-outline-master {
+		@apply ring-[1px] ring-inset ring-master-500 dark:ring-master-500;
+	}
+
+	.variant-outline-grandmaster {
+		@apply ring-[1px] ring-inset ring-grandmaster-500 dark:ring-grandmaster-500;
+	}
+
+	.variant-outline-top500 {
+		@apply ring-[1px] ring-inset ring-top500-500 dark:ring-top500-500;
+	}
+
+	/* Filled */
+	.variant-filled-bronze {
+		@apply bg-bronze-500 text-on-bronze-token dark:bg-bronze-500 dark:text-on-bronze-token;
+	}
+
+	.variant-filled-silver {
+		@apply bg-silver-500 text-on-silver-token dark:bg-silver-500 dark:text-on-silver-token;
+	}
+
+	.variant-filled-gold {
+		@apply bg-gold-500 text-on-gold-token dark:bg-gold-500 dark:text-on-gold-token;
+	}
+
+	.variant-filled-platinum {
+		@apply bg-platinum-500 text-on-platinum-token dark:bg-platinum-500 dark:text-on-platinum-token;
+	}
+
+	.variant-filled-diamond {
+		@apply bg-diamond-500 text-on-diamond-token dark:bg-diamond-500 dark:text-on-diamond-token;
+	}
+
+	.variant-filled-master {
+		@apply bg-master-500 text-on-master-token dark:bg-master-500 dark:text-on-master-token;
+	}
+
+	.variant-filled-grandmaster {
+		@apply bg-grandmaster-500 text-on-grandmaster-token dark:bg-grandmaster-500 dark:text-on-grandmaster-token;
+	}
+
+	.variant-filled-top500 {
+		@apply bg-top500-500 text-on-top500-token dark:bg-top500-500 dark:text-on-top500-token;
+	}
+
+	/* Ringed */
+	.variant-ringed-bronze {
+		@apply variant-outline-bronze bg-transparent dark:bg-transparent;
+	}
+
+	.variant-ringed-silver {
+		@apply variant-outline-silver bg-transparent dark:bg-transparent;
+	}
+
+	.variant-ringed-gold {
+		@apply variant-outline-gold bg-transparent dark:bg-transparent;
+	}
+
+	.variant-ringed-platinum {
+		@apply variant-outline-platinum bg-transparent dark:bg-transparent;
+	}
+
+	.variant-ringed-diamond {
+		@apply variant-outline-diamond bg-transparent dark:bg-transparent;
+	}
+
+	.variant-ringed-master {
+		@apply variant-outline-master bg-transparent dark:bg-transparent;
+	}
+
+	.variant-ringed-grandmaster {
+		@apply variant-outline-grandmaster bg-transparent dark:bg-transparent;
+	}
+
+	.variant-ringed-top500 {
+		@apply variant-outline-top500 bg-transparent dark:bg-transparent;
+	}
+
+	/* Ghost */
+	.variant-ghost-bronze {
+		@apply variant-outline-bronze bg-bronze-500/20 dark:bg-bronze-500/20;
+	}
+
+	.variant-ghost-silver {
+		@apply variant-outline-silver bg-silver-500/20 dark:bg-silver-500/20;
+	}
+
+	.variant-ghost-gold {
+		@apply variant-outline-gold bg-gold-500/20 dark:bg-gold-500/20;
+	}
+
+	.variant-ghost-platinum {
+		@apply variant-outline-platinum bg-platinum-500/20 dark:bg-platinum-500/20;
+	}
+
+	.variant-ghost-diamond {
+		@apply variant-outline-diamond bg-diamond-500/20 dark:bg-diamond-500/20;
+	}
+
+	.variant-ghost-master {
+		@apply variant-outline-master bg-master-500/20 dark:bg-master-500/20;
+	}
+
+	.variant-ghost-grandmaster {
+		@apply variant-outline-grandmaster bg-grandmaster-500/20 dark:bg-grandmaster-500/20;
+	}
+
+	.variant-ghost-top500 {
+		@apply variant-outline-top500 bg-top500-500/20 dark:bg-top500-500/20;
+	}
+
+	/* Soft */
+	.variant-soft-bronze {
+		@apply bg-bronze-400/20 !ring-0 text-bronze-700-200-token dark:bg-bronze-500/20;
+	}
+
+	.variant-soft-silver {
+		@apply bg-silver-400/20 !ring-0 text-silver-700-200-token dark:bg-silver-500/20;
+	}
+
+	.variant-soft-gold {
+		@apply bg-gold-400/20 !ring-0 text-gold-700-200-token dark:bg-gold-500/20;
+	}
+
+	.variant-soft-platinum {
+		@apply bg-platinum-400/20 !ring-0 text-platinum-700-200-token dark:bg-platinum-500/20;
+	}
+
+	.variant-soft-diamond {
+		@apply bg-diamond-400/20 !ring-0 text-diamond-700-200-token dark:bg-diamond-500/20;
+	}
+
+	.variant-soft-master {
+		@apply bg-master-400/20 !ring-0 text-master-700-200-token dark:bg-master-500/20;
+	}
+
+	.variant-soft-grandmaster {
+		@apply bg-grandmaster-400/20 !ring-0 text-grandmaster-700-200-token dark:bg-grandmaster-500/20;
+	}
+
+	.variant-soft-top500 {
+		@apply bg-top500-400/20 !ring-0 text-top500-700-200-token dark:bg-top500-500/20;
+	}
+
+	/* Glass */
+	.variant-glass-bronze {
+		@apply bg-bronze-500/20 backdrop-blur-lg dark:bg-bronze-500/20;
+	}
+
+	.variant-glass-silver {
+		@apply bg-silver-500/20 backdrop-blur-lg dark:bg-silver-500/20;
+	}
+
+	.variant-glass-gold {
+		@apply bg-gold-500/20 backdrop-blur-lg dark:bg-gold-500/20;
+	}
+
+	.variant-glass-platinum {
+		@apply bg-platinum-500/20 backdrop-blur-lg dark:bg-platinum-500/20;
+	}
+
+	.variant-glass-diamond {
+		@apply bg-diamond-500/20 backdrop-blur-lg dark:bg-diamond-500/20;
+	}
+
+	.variant-glass-master {
+		@apply bg-master-500/20 backdrop-blur-lg dark:bg-master-500/20;
+	}
+
+	.variant-glass-grandmaster {
+		@apply bg-grandmaster-500/20 backdrop-blur-lg dark:bg-grandmaster-500/20;
+	}
+
+	.variant-glass-top500 {
+		@apply bg-top500-500/20 backdrop-blur-lg dark:bg-top500-500/20;
+	}
+}
