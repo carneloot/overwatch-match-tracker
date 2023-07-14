@@ -50,7 +50,9 @@ export const actions = {
 
 		// region Keep Values Cookie
 		const keepValuesCookie = {
-			accounts: form.data.accounts,
+			accounts: form.data.accounts.length
+				? form.data.accounts
+				: ['none'],
 			modality: form.data.modality
 		};
 
