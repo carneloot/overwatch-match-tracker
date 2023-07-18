@@ -5,8 +5,9 @@ import { v4 as uuid } from 'uuid';
 import { z } from 'zod';
 
 import type { Actions, PageServerLoad } from './$types';
-import { handleLoginRedirect } from '$lib/utils';
+
 import { createNewAccount } from '$lib/account.server';
+import { requireUser } from '$lib/session.server';
 
 const newAccountSchema = z.object({
 	battleTag: z.string(),
@@ -14,9 +15,7 @@ const newAccountSchema = z.object({
 });
 
 export const load = (async (event) => {
-	if (!event.locals.user) {
-		throw redirect(302, handleLoginRedirect(event));
-	}
+	await requireUser(event);
 
 	const form = await superValidate(event, newAccountSchema);
 
@@ -27,9 +26,7 @@ export const load = (async (event) => {
 
 export const actions = {
 	default: async (event) => {
-		if (!event.locals.user) {
-			throw redirect(302, handleLoginRedirect(event));
-		}
+		const user = await requireUser(event);
 
 		const form = await superValidate(event, newAccountSchema);
 
@@ -40,7 +37,7 @@ export const actions = {
 		await createNewAccount({
 			...form.data,
 			id: uuid(),
-			userId: event.locals.user.id
+			userId: user.id
 		});
 
 		throw redirect(301, '/accounts');

@@ -2,11 +2,6 @@ import type { RequestEvent } from '@sveltejs/kit';
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
-export function handleLoginRedirect(event: RequestEvent) {
-	const redirectTo = event.url.pathname + event.url.search;
-	return `/login?redirectTo=${redirectTo}`;
-}
-
 export function groupByField<Type, Key extends keyof Type>(
 	arr: Type[],
 	key: Key

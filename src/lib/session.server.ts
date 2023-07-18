@@ -11,7 +11,6 @@ import { validateMagicLink } from '$lib/magic-link.server';
 import { SESSION_SECRET } from '$env/static/private';
 import { db } from '$lib/database/db';
 import { redirect } from '@sveltejs/kit';
-import { handleLoginRedirect } from '$lib/utils';
 
 const sessionIdKey = '__session_id__' as const;
 
@@ -169,7 +168,7 @@ async function requireUser(event: RequestEvent) {
 		const session = await getSession(event);
 		await session.signOut();
 		await session.sendCookie(event);
-		throw redirect(303, handleLoginRedirect(event));
+		throw redirect(303, '/login');
 	}
 
 	return user;
