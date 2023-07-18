@@ -6,8 +6,6 @@ import { z } from 'zod';
 
 import type { Actions, PageServerLoad } from './$types';
 
-import * as constants from '$lib/constants';
-
 import {
 	MatchResult,
 	matchesTable,
@@ -16,6 +14,7 @@ import {
 	SkillTier
 } from '$lib/database/schema';
 import { getAccountsByUser, getSelectedAccountByUser } from '$lib/account.server';
+import { getNewMatchValues, setNewMatchValues } from '$lib/sessions/new-match.session';
 import { requireUser } from '$lib/session.server';
 import { OverwatchHeroEnum } from '$lib/data/heroes';
 import { OverwatchMapEnum } from '$lib/data/maps';
@@ -87,16 +86,13 @@ export const load = (async (event) => {
 
 	const userAccount = await getSelectedAccountByUser(user.id);
 
-	const keepValuesCookie = JSON.parse(
-		event.cookies.get(constants.cookies.matchKeepValue) ?? 'null'
-	) as Pick<NewMatch, 'accounts' | 'modality'> | null;
+	const storedData = await getNewMatchValues(event);
 
 	const initialValues = {
 		time: currentTime,
 		accountId: userAccount.id,
-		accounts: [],
 		result: 'win',
-		...(keepValuesCookie ?? {})
+		...storedData
 	} satisfies Partial<NewMatch>;
 
 	const form = await superValidate(initialValues, newMatchSchema, { errors: false });
@@ -121,16 +117,10 @@ export const actions = {
 
 		await createNewMatch(form.data);
 
-		// region Keep Values Cookie
-		const keepValuesCookie = {
+		await setNewMatchValues(event, {
 			accounts: form.data.accounts.length ? form.data.accounts : ['none'],
 			modality: form.data.modality
-		};
-
-		event.cookies.set(constants.cookies.matchKeepValue, JSON.stringify(keepValuesCookie), {
-			path: '/matches/new'
 		});
-		// endregion
 
 		throw redirect(301, '/matches');
 	}
