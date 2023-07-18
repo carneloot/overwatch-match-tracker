@@ -2,6 +2,8 @@
 	import { superForm } from 'sveltekit-superforms/client';
 	import { dev } from '$app/environment';
 
+	import GoogleLoginButton from '$lib/components/GoogleLoginButton.svelte';
+
 	export let data;
 
 	const { form, constraints, errors } = superForm(data.form);
@@ -12,9 +14,11 @@
 </svelte:head>
 
 <div class="grid h-full place-items-center">
-	<form method="post" class="card flex w-[400px] flex-col justify-center gap-3 px-10 py-8">
-		<h2 class="h2">Login</h2>
+	<form method="post" class="card flex flex-col justify-center gap-3 px-10 py-8 sm:w-[400px]">
+		<h2 class="h2 mb-5">Login</h2>
+		<GoogleLoginButton />
 		{#if dev}
+			<hr />
 			<!-- Temporary before using flash messages -->
 			{#if $errors.email}
 				<div class="variant-soft-error alert">

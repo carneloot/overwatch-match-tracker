@@ -1,4 +1,5 @@
 import type { RequestEvent } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
 
 import { eq } from 'drizzle-orm';
 import { v4 as uuid } from 'uuid';
@@ -10,7 +11,7 @@ import { createCookieSessionStorage } from '$lib/session-storage/sessions';
 import { validateMagicLink } from '$lib/magic-link.server';
 import { SESSION_SECRET } from '$env/static/private';
 import { db } from '$lib/database/db';
-import { redirect } from '@sveltejs/kit';
+import { upsertUser } from '$lib/user';
 
 const sessionIdKey = '__session_id__' as const;
 
@@ -131,22 +132,7 @@ async function getSession(event: RequestEvent) {
 async function getSessionFromMagicLink(event: RequestEvent) {
 	const email = await validateMagicLink(event.request.url);
 
-	let user = await db
-		.select({ id: usersTable.id })
-		.from(usersTable)
-		.where(eq(usersTable.email, email))
-		.get();
-
-	if (!user) {
-		user = await db
-			.insert(usersTable)
-			.values({
-				id: uuid(),
-				email
-			})
-			.returning({ id: usersTable.id })
-			.get();
-	}
+	const user = await upsertUser(email);
 
 	const session = await getSession(event);
 	await session.signIn(user);
