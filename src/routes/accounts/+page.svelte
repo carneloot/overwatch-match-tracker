@@ -5,9 +5,9 @@
 
 	export let data;
 
-	const missingSelected = data.accounts.every((account) => !account.selected);
+	const noAccounts = !data.accounts.length;
 
-	let showPercentage = false;
+	$: missingSelected = !noAccounts && data.accounts.every((account) => !account.selected);
 </script>
 
 <svelte:head>
@@ -31,6 +31,10 @@
 			<p>You must have at least one selected account!</p>
 		</div>
 	</div>
+{/if}
+
+{#if noAccounts}
+	<p class="mb-6 text-center text-lg">Create at least one account to use the platform!</p>
 {/if}
 
 <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
