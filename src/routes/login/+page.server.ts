@@ -1,68 +1,87 @@
 import { fail, redirect } from '@sveltejs/kit';
 
+import { setError, superValidate } from 'sveltekit-superforms/server';
+import { eq } from 'drizzle-orm';
 import { z } from 'zod';
 
 import type { Actions, PageServerLoad } from './$types';
-import * as constants from '$lib/constants';
-import { createAuthJWT } from '$lib/jwt';
-import { validateUser } from '$lib/user.server';
 
-export const load = (({ cookies }) => {
-	const token = cookies.get(constants.cookies.authToken);
-
-	if (token) {
-		throw redirect(301, '/');
-	}
-}) satisfies PageServerLoad;
+import { verifyEmail } from '$lib/email.server';
+import { db } from '$lib/database/db';
+import { usersTable } from '$lib/database/schema';
+import { getDomainUrl } from '$lib/utils';
+import { getMagicLink, sendMagicLink } from '$lib/magic-link.server';
+import { dev } from '$app/environment';
 
 const LoginSchema = z.object({
-	username: z
-		.string({ required_error: 'Field is required' })
-		.nonempty('Field is required')
-		.max(64, 'Field must be less than 64 characters'),
-	password: z
-		.string({ required_error: 'Password is required' })
-		.min(6, 'Password must be at least 6 characters')
-		.max(64, 'Password must be less than 64 characters')
-		.trim()
+	email: z.string().nonempty().max(64).email()
 });
+
+async function isEmailVerified(
+	email: string
+): Promise<{ verified: true } | { verified: false; message: string }> {
+	const verifierResult = await verifyEmail(email);
+	if (verifierResult.status) {
+		return { verified: true };
+	}
+
+	const userExists = Boolean(
+		await db
+			.select({ id: usersTable.id })
+			.from(usersTable)
+			.where(eq(usersTable.email, email))
+			.get()
+	);
+
+	if (userExists) {
+		return { verified: true };
+	}
+
+	return { verified: false, message: verifierResult.error.message };
+}
+
+export const load = (async (event) => {
+	if (event.locals.user) {
+		throw redirect(301, '/');
+	}
+
+	const form = await superValidate(event, LoginSchema);
+
+	return { form };
+}) satisfies PageServerLoad;
 
 export const actions = {
 	default: async (event) => {
-		const formData = Object.fromEntries(await event.request.formData());
-		const parseResult = LoginSchema.safeParse(formData);
-		const { password, ...rest } = formData;
-		if (!parseResult.success) {
-			const { fieldErrors: errors } = parseResult.error.flatten();
-			return fail(422, {
-				data: rest,
-				errors
-			});
-		}
-		const { data } = parseResult;
+		const form = await superValidate(event, LoginSchema);
 
-		const user = await validateUser(data);
-
-		if (!user) {
-			return fail(401, {
-				data: rest,
-				errors: {
-					general: [ 'Invalid credentials' ]
-				}
-			});
+		if (!form.valid) {
+			return fail(400, { form });
 		}
 
-		const token = await createAuthJWT({ id: user.id });
+		const { email } = form.data;
 
-		event.cookies.set(constants.cookies.authToken, token, {
-			path: '/'
-		});
+		try {
+			const verifiedStatus = await isEmailVerified(email);
 
-		const redirectTo = event.url.searchParams.get('redirectTo');
-		if (redirectTo) {
-			throw redirect(302, `/${redirectTo.slice(1)}`);
+			if (!verifiedStatus.verified) {
+				return setError(
+					form,
+					'email',
+					`Error trying to verify the email: "${verifiedStatus.message}"`
+				);
+			}
+		} catch (error: unknown) {
+			console.error('Error verifying the email', error);
 		}
 
-		throw redirect(302, '/');
+		const domainUrl = getDomainUrl(event);
+		if (dev) {
+			const magicLink = getMagicLink({ email, domainUrl });
+			throw redirect(303, magicLink);
+		}
+
+		await sendMagicLink({ email, domainUrl });
+
+		return { form };
 	}
 } satisfies Actions;

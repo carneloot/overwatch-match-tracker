@@ -3,11 +3,18 @@ import { and, desc, eq, sql } from 'drizzle-orm';
 
 import type { PageServerLoad } from './$types';
 
-import { accountsMatchesTable, accountsTable, heroesMatchesTable, matchesTable, rankUpdatesTable } from '$lib/database/schema';
+import {
+	accountsMatchesTable,
+	accountsTable,
+	heroesMatchesTable,
+	matchesTable,
+	rankUpdatesTable
+} from '$lib/database/schema';
 import { currentSeason, type OverwatchSeasonSlug } from '$lib/data/seasons';
 import { getSelectedAccountByUser } from '$lib/account.server';
-import { handleLoginRedirect, jsonParse } from '$lib/utils';
 import type { OverwatchHeroSlug } from '$lib/data/heroes';
+import { requireUser } from '$lib/session.server';
+import { jsonParse } from '$lib/utils';
 import { db } from '$lib/database/db';
 
 type GetMatchesForDisplay = {
@@ -15,12 +22,12 @@ type GetMatchesForDisplay = {
 	season: OverwatchSeasonSlug;
 	limit: number;
 	skip: number;
-}
+};
 
 type CountMatchesForDisplay = {
 	accountId: string;
 	season: OverwatchSeasonSlug;
-}
+};
 
 async function getMatches({ accountId, season, limit, skip }: GetMatchesForDisplay) {
 	const matches = await db
@@ -33,26 +40,21 @@ async function getMatches({ accountId, season, limit, skip }: GetMatchesForDispl
 			map: matchesTable.map,
 			heroes: sql<string>`json_group_array(distinct(${heroesMatchesTable.hero}))`,
 			accounts: sql<string>`json_group_array(distinct(${accountsTable.battleTag}))`,
-			rankUpdate: rankUpdatesTable,
+			rankUpdate: rankUpdatesTable
 		})
 		.from(matchesTable)
 		.innerJoin(heroesMatchesTable, eq(heroesMatchesTable.matchId, matchesTable.id))
 		.leftJoin(accountsMatchesTable, eq(accountsMatchesTable.matchId, matchesTable.id))
 		.leftJoin(accountsTable, eq(accountsMatchesTable.accountId, accountsTable.id))
 		.leftJoin(rankUpdatesTable, eq(rankUpdatesTable.matchId, matchesTable.id))
-		.where(
-			and(
-				eq(matchesTable.season, season),
-				eq(matchesTable.accountId, accountId)
-			)
-		)
+		.where(and(eq(matchesTable.season, season), eq(matchesTable.accountId, accountId)))
 		.limit(limit)
 		.offset(skip)
 		.orderBy(desc(matchesTable.time))
 		.groupBy(matchesTable.id)
 		.all();
 
-	return matches.map(match => ({
+	return matches.map((match) => ({
 		...match,
 		heroes: jsonParse<OverwatchHeroSlug[]>(match.heroes),
 		accounts: jsonParse<string[]>(match.accounts).filter(Boolean)
@@ -62,27 +64,23 @@ async function getMatches({ accountId, season, limit, skip }: GetMatchesForDispl
 async function countMatches({ accountId, season }: CountMatchesForDisplay) {
 	const [{ count }] = await db
 		.select({
-			count: sql<number>`count(${matchesTable.id})`,
+			count: sql<number>`count(${matchesTable.id})`
 		})
 		.from(matchesTable)
-		.where(
-			and(
-				eq(matchesTable.season, season),
-				eq(matchesTable.accountId, accountId)
-			)
-		)
+		.where(and(eq(matchesTable.season, season), eq(matchesTable.accountId, accountId)))
 		.all();
 
 	return count;
 }
 
-
 export const load = (async (event) => {
-	if (!event.locals.user) {
-		throw redirect(301, handleLoginRedirect(event));
-	}
+	const user = await requireUser(event);
 
-	const selectedAccount = await getSelectedAccountByUser(event.locals.user.id);
+	const selectedAccount = await getSelectedAccountByUser(user.id);
+
+	if (!selectedAccount) {
+		throw redirect(303, '/accounts'); // Add message to select an account
+	}
 
 	const limit = Number(event.url.searchParams.get('limit') ?? 10);
 	const skip = Number(event.url.searchParams.get('skip') ?? 0);

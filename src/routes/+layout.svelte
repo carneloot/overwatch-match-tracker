@@ -7,12 +7,10 @@
 
 	import Header from '$lib/components/Header.svelte';
 	import Footer from '$lib/components/Footer.svelte';
-
-	export let data;
 </script>
 
 <div class="mx-auto grid h-full grid-rows-[auto_1fr_auto]">
-	<Header user={data.user} />
+	<Header />
 
 	<main class="container mx-auto px-4 py-6">
 		<slot />

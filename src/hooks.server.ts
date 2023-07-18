@@ -1,15 +1,11 @@
 import type { Handle } from '@sveltejs/kit';
-
-import { verifyJwt } from '$lib/jwt';
-import { getUserById } from '$lib/user.server';
-import * as constants from '$lib/constants';
+import { getUser } from '$lib/session.server';
 
 export const handle = (async ({ event, resolve }) => {
-	const token = event.cookies.get(constants.cookies.authToken);
+	const user = await getUser(event);
 
-	if (token) {
-		const { id: userId } = await verifyJwt(token);
-		event.locals.user = await getUserById(userId);
+	if (user) {
+		event.locals.user = user;
 	}
 
 	return resolve(event);

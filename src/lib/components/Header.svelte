@@ -1,8 +1,5 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import type { User } from '$lib/database/schema';
-
-	export let user: User | null = null;
 
 	const links = [
 		{ name: 'Matches', href: '/matches' },
@@ -25,16 +22,13 @@
 					<a href={link.href} class="px-3 py-3">{link.name}</a>
 				</li>
 			{/each}
-			{#if user !== null}
+			{#if $page.data.user}
 				<li class="grid place-items-center">
 					<a href="/logout" class="btn variant-glass-error">Log out</a>
 				</li>
 			{:else}
 				<li class="grid place-items-center">
 					<a href="/login" class="btn variant-filled-primary">Login</a>
-				</li>
-				<li class="grid place-items-center">
-					<a href="/register" class="btn variant-ringed-primary">Register</a>
 				</li>
 			{/if}
 		</ul>

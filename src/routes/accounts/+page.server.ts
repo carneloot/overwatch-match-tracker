@@ -1,4 +1,4 @@
-import { fail, redirect } from '@sveltejs/kit';
+import { fail } from '@sveltejs/kit';
 
 import { desc, eq, sql } from 'drizzle-orm';
 import { z } from 'zod';
@@ -8,7 +8,8 @@ import type { Actions, PageServerLoad } from './$types';
 import { deleteAccount, selectAccount } from '$lib/account.server';
 import { db } from '$lib/database/db';
 import { accountsTable, rankUpdatesTable } from '$lib/database/schema';
-import { handleLoginRedirect, jsonParse } from '$lib/utils';
+import { jsonParse } from '$lib/utils';
+import { requireUser } from '$lib/session.server';
 
 async function getRankUpdate(rankUpdateId: string) {
 	const [rankUpdate] = await db
@@ -33,47 +34,48 @@ async function getAccountsByUser(userId: string) {
 			id: accountsTable.id,
 			battleTag: accountsTable.battleTag,
 			selected: accountsTable.selected,
-			rankUpdates: sql<string | null>`json_group_array(${rankUpdates.id})`,
+			rankUpdates: sql<string | null>`json_group_array(${rankUpdates.id})`
 		})
 		.from(accountsTable)
 		.leftJoin(rankUpdates, eq(rankUpdates.accountId, accountsTable.id))
-		.where(
-			eq(accountsTable.userId, userId)
-		)
+		.where(eq(accountsTable.userId, userId))
 		.groupBy(accountsTable.id)
 		.all();
 
-	return Promise.all(accounts.map(async account => {
-		const rankUpdates = await Promise.all(jsonParse<string[]>(account.rankUpdates ?? '[]').filter(Boolean).map(getRankUpdate))
+	return Promise.all(
+		accounts.map(async (account) => {
+			const rankUpdates = await Promise.all(
+				jsonParse<string[]>(account.rankUpdates ?? '[]')
+					.filter(Boolean)
+					.map(getRankUpdate)
+			);
 
-		rankUpdates.sort((a, b) => {
-			if (!a.role) {
-				return -1;
-			}
+			rankUpdates.sort((a, b) => {
+				if (!a.role) {
+					return -1;
+				}
 
-			if (!b.role) {
-				return 1;
-			}
+				if (!b.role) {
+					return 1;
+				}
 
-			return a.role.localeCompare(b.role)
-		});
+				return a.role.localeCompare(b.role);
+			});
 
-		return {
-			...account,
-			rankUpdates,
-		};
-	}));
+			return {
+				...account,
+				rankUpdates
+			};
+		})
+	);
 }
 
 export const load = (async (event) => {
-	if (!event.locals.user) {
-		throw redirect(302, handleLoginRedirect(event));
-	}
+	const user = await requireUser(event);
 
 	return {
-		accounts: getAccountsByUser(event.locals.user.id)
+		accounts: getAccountsByUser(user.id)
 	};
-
 }) satisfies PageServerLoad;
 
 const actionSchema = z.object({
@@ -82,9 +84,7 @@ const actionSchema = z.object({
 
 export const actions = {
 	delete: async (event) => {
-		if (!event.locals.user) {
-			throw redirect(302, handleLoginRedirect(event));
-		}
+		await requireUser(event);
 
 		const formData = Object.fromEntries(await event.request.formData());
 		const parseResult = actionSchema.safeParse(formData);
@@ -97,9 +97,7 @@ export const actions = {
 		await deleteAccount(data.accountId);
 	},
 	select: async (event) => {
-		if (!event.locals.user) {
-			throw redirect(302, handleLoginRedirect(event));
-		}
+		const user = await requireUser(event);
 
 		const formData = Object.fromEntries(await event.request.formData());
 		const parseResult = actionSchema.safeParse(formData);
@@ -110,7 +108,7 @@ export const actions = {
 		const { data } = parseResult;
 
 		await selectAccount({
-			userId: event.locals.user.id,
+			userId: user.id,
 			accountId: data.accountId
 		});
 	}

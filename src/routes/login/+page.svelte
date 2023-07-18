@@ -1,54 +1,45 @@
-<script lang='ts'>
-	import type { ActionData } from './$types';
+<script lang="ts">
+	import { superForm } from 'sveltekit-superforms/client';
+	import { dev } from '$app/environment';
 
-	export let form: ActionData;
+	export let data;
+
+	const { form, constraints, errors } = superForm(data.form);
 </script>
 
 <svelte:head>
 	<title>Login</title>
 </svelte:head>
 
-<div class='flex h-full w-full flex-col items-center justify-center'>
-	<form method='post' class='flex flex-col items-center justify-center rounded-lg bg-neutral-100 p-8 drop-shadow-xl w-[400px]'>
-		<h1 class='my-2 text-center text-3xl font-medium'>Login</h1>
-		<label class='mb-3 w-full label'>
-			<span>E-mail or username</span>
-			<input
-				class='input'
-				class:input-error={!!form?.errors.username}
-				value={form?.data?.username ?? ''}
-				type='text'
-				name='username'
-				placeholder='johndoe@email.com'
-			/>
-			{#if form?.errors.username}
-				<span class='text-error-500'>{form.errors.username[0]}</span>
+<div class="grid h-full place-items-center">
+	<form method="post" class="card flex w-[400px] flex-col justify-center gap-3 px-10 py-8">
+		<h2 class="h2">Login</h2>
+		{#if dev}
+			<!-- Temporary before using flash messages -->
+			{#if $errors.email}
+				<div class="variant-soft-error alert">
+					{$errors.email}
+				</div>
 			{/if}
-		</label>
-		<label class='mb-5 w-full label'>
-			<span>Password</span>
-			<input
-				class='input'
-				class:input-error={!!form?.errors.password}
-				type='password'
-				name='password'
-				placeholder='Password'
-			/>
-			{#if form?.errors.password}
-				<span class='text-error-500'>{form.errors.password[0]}</span>
-			{/if}
-		</label>
-		{#if form?.errors.general}
-			<span class='text-error-500 mb-3'>{form.errors.general[0]}</span>
+			<label class="label">
+				<span>Email address</span>
+				<input
+					type="email"
+					name="email"
+					class="input w-full"
+					aria-invalid={$errors.email ? 'true' : 'false'}
+					placeholder="john@doe.com"
+					bind:value={$form.email}
+					{...$constraints.email}
+				/>
+			</label>
+			<button type="submit" class="btn variant-ghost">Login with email</button>
 		{/if}
-		<button
-			class='btn variant-filled'
-			type='submit'
-		>
-			Login
-		</button>
 	</form>
-	<p class='mt-5'>
-		Don't have an account?{' '}<a href='/register' class='anchor'>Sign up!</a>
-	</p>
 </div>
+
+<style>
+	.label > span {
+		@apply block;
+	}
+</style>

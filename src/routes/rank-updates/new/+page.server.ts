@@ -6,19 +6,25 @@ import { z } from 'zod';
 
 import type { PageServerLoad } from './$types';
 
-import { handleLoginRedirect } from '$lib/utils';
 import { getSelectedAccountByUser } from '$lib/account.server';
-import { SeasonalUpdate, SkillTier, heroesMatchesTable, matchesTable, rankUpdatesTable } from '$lib/database/schema';
+import {
+	SeasonalUpdate,
+	SkillTier,
+	heroesMatchesTable,
+	matchesTable,
+	rankUpdatesTable
+} from '$lib/database/schema';
 import { HeroRole, heroes } from '$lib/data/heroes';
 import { db } from '$lib/database/db';
 import { currentSeason } from '$lib/data/seasons';
+import { requireUser } from '$lib/session.server';
 
 const getMatch = async (matchId: string) => {
 	const [match] = await db
 		.select({
 			time: matchesTable.time,
 			modality: matchesTable.modality,
-			hero: heroesMatchesTable.hero,
+			hero: heroesMatchesTable.hero
 		})
 		.from(matchesTable)
 		.innerJoin(heroesMatchesTable, eq(heroesMatchesTable.matchId, matchesTable.id))
@@ -27,14 +33,12 @@ const getMatch = async (matchId: string) => {
 		.all();
 
 	return match;
-}
+};
 
 export const load = (async (event) => {
-	if (!event.locals.user) {
-		throw redirect(302, handleLoginRedirect(event));
-	}
+	const user = await requireUser(event);
 
-	const activeAccount = await getSelectedAccountByUser(event.locals.user.id);
+	const activeAccount = await getSelectedAccountByUser(user.id);
 
 	const matchId = event.url.searchParams.get('matchId');
 	const match = matchId ? await getMatch(matchId) : undefined;
@@ -51,7 +55,7 @@ export const load = (async (event) => {
 		modality: match?.modality ?? undefined,
 		division: 3,
 		percentage: 50,
-		role,
+		role
 	} satisfies Partial<NewRankUpdate>;
 
 	const form = await superValidate(initialValues, newRankUpdateSchema, { errors: false });
@@ -59,17 +63,18 @@ export const load = (async (event) => {
 	return { form };
 }) satisfies PageServerLoad;
 
-const newRankUpdateSchema = z.object({
-	accountId: z.string().uuid(),
-	matchId: z.string().uuid().optional(),
-	seasonalUpdate: SeasonalUpdate.optional(),
-	modality: z.string(),
-	role: HeroRole.optional(),
-	time: z.coerce.date(),
-	tier: SkillTier,
-	division: z.number().int().min(1).max(500),
-	percentage: z.number().int().min(1).max(100).optional(),
-})
+const newRankUpdateSchema = z
+	.object({
+		accountId: z.string().uuid(),
+		matchId: z.string().uuid().optional(),
+		seasonalUpdate: SeasonalUpdate.optional(),
+		modality: z.string(),
+		role: HeroRole.optional(),
+		time: z.coerce.date(),
+		tier: SkillTier,
+		division: z.number().int().min(1).max(500),
+		percentage: z.number().int().min(1).max(100).optional()
+	})
 	.superRefine(({ matchId, seasonalUpdate, tier, division, percentage }, ctx) => {
 		if (!matchId && !seasonalUpdate) {
 			ctx.addIssue({
@@ -105,17 +110,14 @@ async function createRankUpdate(data: NewRankUpdate) {
 		.values({
 			id: uuid(),
 			...data,
-			season: currentSeason.slug,
+			season: currentSeason.slug
 		})
 		.run();
 }
 
-
 export const actions = {
 	default: async (event) => {
-		if (!event.locals.user) {
-			throw redirect(302, handleLoginRedirect(event));
-		}
+		await requireUser(event);
 
 		const form = await superValidate(event, newRankUpdateSchema);
 
