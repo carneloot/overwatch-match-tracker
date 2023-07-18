@@ -2,8 +2,8 @@ import type { RequestEvent } from '@sveltejs/kit';
 
 import type { CookieSerializeOptions } from 'cookie';
 
-import { decodeCookieValue, encodeCookieValue } from '$lib/sessions/cookies';
-import { sign, unsign } from '$lib/sessions/crypto';
+import { decodeCookieValue, encodeCookieValue } from '$lib/session-storage/cookies';
+import { sign, unsign } from '$lib/session-storage/crypto';
 
 type CreateCookieSessionStorageOptions = {
 	secrets: string[];

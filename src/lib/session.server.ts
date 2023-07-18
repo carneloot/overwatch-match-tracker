@@ -6,7 +6,7 @@ import { v4 as uuid } from 'uuid';
 import * as constants from '$lib/constants';
 
 import { sessionsTable, type User, usersTable } from '$lib/database/schema';
-import { createCookieSessionStorage } from '$lib/sessions/sessions';
+import { createCookieSessionStorage } from '$lib/session-storage/sessions';
 import { validateMagicLink } from '$lib/magic-link.server';
 import { SESSION_SECRET } from '$env/static/private';
 import { db } from '$lib/database/db';
