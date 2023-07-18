@@ -50,6 +50,7 @@
 		"drizzle-zod": "^0.4.4",
 		"google-auth-library": "^8.9.0",
 		"lucide-svelte": "^0.259.0",
+		"resend": "^0.17.1",
 		"sveltekit-superforms": "^1.2.0",
 		"tailwind-merge": "^1.13.2",
 		"uuid": "^9.0.0",

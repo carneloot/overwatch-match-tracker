@@ -1,4 +1,6 @@
-import { EMAIL_VERIFIER_AUTH } from '$env/static/private';
+import { Resend } from 'resend';
+
+import { EMAIL_VERIFIER_AUTH, RESEND_API_KEY } from '$env/static/private';
 import type { User } from '$lib/database/schema';
 
 type VerifierResult =
@@ -12,14 +14,6 @@ export async function verifyEmail(emailAddress: string) {
 	return (await response.json()) as VerifierResult;
 }
 
-type EmailMessage = {
-	to: string;
-	from: string;
-	subject: string;
-	text: string;
-	html?: string | null;
-};
-
 type SendMagicLinkEmail = {
 	user: User | null;
 	domainUrl: string;
@@ -27,27 +21,7 @@ type SendMagicLinkEmail = {
 	magicLink: string;
 };
 
-export async function sendMail(data: EmailMessage) {
-	// TODO
-	// if (!html) {
-	// 	html = text;
-	// }
-	// const transport = nodemailer.createTransport({
-	// 	host: NODEMAILER_HOST,
-	// 	port: Number(NODEMAILER_PORT),
-	// 	auth: {
-	// 		user: NODEMAILER_USER,
-	// 		pass: NODEMAILER_PASS
-	// 	}
-	// });
-	// const info = await transport.sendMail({
-	// 	to,
-	// 	from,
-	// 	subject,
-	// 	text,
-	// 	html
-	// });
-}
+const resend = new Resend(RESEND_API_KEY);
 
 export async function sendMagicLinkEmail({
 	domainUrl,
@@ -55,7 +29,7 @@ export async function sendMagicLinkEmail({
 	magicLink,
 	user
 }: SendMagicLinkEmail) {
-	const sender = 'match-tracker@carneloot.com';
+	const sender = 'Match Tracker Team <match-tracker@carneloot.com>';
 	const { hostname } = new URL(domainUrl);
 	const userExists = Boolean(user);
 
@@ -77,7 +51,7 @@ Thanks for joining in and happy tracking!
 PS: If you did now request this email, you can safely ignore it.
 	`.trim();
 
-	await sendMail({
+	await resend.sendEmail({
 		to: email,
 		subject: `Here's your sign-in link for 🎮 Overwatch Match Tracker`,
 		from: sender,
