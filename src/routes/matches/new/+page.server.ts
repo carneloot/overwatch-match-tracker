@@ -91,7 +91,7 @@ export const load = (async (event) => {
 		...(keepValuesCookie ?? {})
 	} satisfies Partial<NewMatch>;
 
-	const form = await superValidate(initialValues, newMatchSchema);
+	const form = await superValidate(initialValues, newMatchSchema, { errors: false });
 
 	const availableAccounts = getAccountsByUser(event.locals.user.id);
 

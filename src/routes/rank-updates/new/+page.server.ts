@@ -54,7 +54,7 @@ export const load = (async (event) => {
 		role,
 	} satisfies Partial<NewRankUpdate>;
 
-	const form = await superValidate(initialValues, newRankUpdateSchema);
+	const form = await superValidate(initialValues, newRankUpdateSchema, { errors: false });
 
 	return { form };
 }) satisfies PageServerLoad;
