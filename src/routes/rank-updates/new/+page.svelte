@@ -145,7 +145,7 @@
 	</div>
 </form>
 
-<style>
+<style lang="postcss">
 	.label > span {
 		@apply block;
 	}
