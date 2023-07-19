@@ -30,7 +30,7 @@ type CountMatchesForDisplay = {
 };
 
 async function getMatches({ accountId, season, limit, skip }: GetMatchesForDisplay) {
-	const matches = db
+	const matches = await db
 		.select({
 			id: matchesTable.id,
 			season: matchesTable.season,
@@ -62,13 +62,13 @@ async function getMatches({ accountId, season, limit, skip }: GetMatchesForDispl
 }
 
 async function countMatches({ accountId, season }: CountMatchesForDisplay) {
-	const { count } = db
+	const [{ count }] = await db
 		.select({
 			count: sql<number>`count(${matchesTable.id})`
 		})
 		.from(matchesTable)
 		.where(and(eq(matchesTable.season, season), eq(matchesTable.accountId, accountId)))
-		.get();
+		.all();
 
 	return count;
 }

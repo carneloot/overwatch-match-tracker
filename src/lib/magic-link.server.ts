@@ -44,7 +44,12 @@ export function getMagicLink({ email, domainUrl }: GetMagicLink) {
 export async function sendMagicLink({ email, domainUrl }: SendMagicLink) {
 	const magicLink = getMagicLink({ email, domainUrl });
 
-	const user = db.select().from(usersTable).where(eq(usersTable.email, email)).get() ?? null;
+	const user = await db
+		.select()
+		.from(usersTable)
+		.where(eq(usersTable.email, email))
+		.get()
+		.catch(() => null);
 
 	await sendMagicLinkEmail({
 		email,

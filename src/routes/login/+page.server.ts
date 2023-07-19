@@ -26,7 +26,11 @@ async function isEmailVerified(
 	}
 
 	const userExists = Boolean(
-		db.select({ id: usersTable.id }).from(usersTable).where(eq(usersTable.email, email)).get()
+		await db
+			.select({ id: usersTable.id })
+			.from(usersTable)
+			.where(eq(usersTable.email, email))
+			.get()
 	);
 
 	if (userExists) {
@@ -73,7 +77,6 @@ export const actions = {
 		const domainUrl = getDomainUrl(event);
 		if (dev) {
 			const magicLink = getMagicLink({ email, domainUrl });
-			console.log(magicLink);
 			throw redirect(303, magicLink);
 		}
 

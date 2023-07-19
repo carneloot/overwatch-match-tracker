@@ -4,8 +4,8 @@ import 'dotenv/config';
 export default {
 	out: './migrations',
 	schema: './src/lib/database/schema.ts',
-	driver: 'better-sqlite',
+	driver: 'libsql',
 	dbCredentials: {
-		url: process.env.DATABASE_URL as string
+		url: process.env.DATABASE_URL
 	}
 } satisfies Config;

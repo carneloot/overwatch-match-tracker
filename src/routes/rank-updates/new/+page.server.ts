@@ -19,8 +19,8 @@ import { db } from '$lib/database/db';
 import { currentSeason } from '$lib/data/seasons';
 import { requireUser } from '$lib/session.server';
 
-const getMatch = (matchId: string) => {
-	return db
+const getMatch = async (matchId: string) => {
+	const [match] = await db
 		.select({
 			time: matchesTable.time,
 			modality: matchesTable.modality,
@@ -30,7 +30,9 @@ const getMatch = (matchId: string) => {
 		.innerJoin(heroesMatchesTable, eq(heroesMatchesTable.matchId, matchesTable.id))
 		.where(eq(matchesTable.id, matchId))
 		.limit(1)
-		.get();
+		.all();
+
+	return match;
 };
 
 export const load = (async (event) => {
@@ -39,7 +41,7 @@ export const load = (async (event) => {
 	const activeAccount = await getSelectedAccountByUser(user.id);
 
 	const matchId = event.url.searchParams.get('matchId');
-	const match = matchId ? getMatch(matchId) : undefined;
+	const match = matchId ? await getMatch(matchId) : undefined;
 	const role = match
 		? match.modality === 'role-queue'
 			? heroes[match.hero].role
@@ -102,8 +104,9 @@ const newRankUpdateSchema = z
 	});
 type NewRankUpdate = z.infer<typeof newRankUpdateSchema>;
 
-function createRankUpdate(data: NewRankUpdate) {
-	db.insert(rankUpdatesTable)
+async function createRankUpdate(data: NewRankUpdate) {
+	await db
+		.insert(rankUpdatesTable)
 		.values({
 			id: uuid(),
 			...data,
@@ -122,7 +125,7 @@ export const actions = {
 			return fail(400, { form });
 		}
 
-		createRankUpdate(form.data);
+		await createRankUpdate(form.data);
 
 		const redirectTo = event.url.searchParams.get('redirectTo') ?? '/matches';
 

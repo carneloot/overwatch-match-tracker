@@ -1,6 +1,6 @@
 import { Resend } from 'resend';
 
-import { env } from '$env/dynamic/private';
+import { EMAIL_VERIFIER_AUTH, RESEND_API_KEY } from '$env/static/private';
 import type { User } from '$lib/database/schema';
 
 type VerifierResult =
@@ -9,7 +9,7 @@ type VerifierResult =
 
 export async function verifyEmail(emailAddress: string) {
 	const verifierUrl = new URL(`https://verifier.meetchopra.com/verify/${emailAddress}`);
-	verifierUrl.searchParams.append('token', env.EMAIL_VERIFIER_AUTH);
+	verifierUrl.searchParams.append('token', EMAIL_VERIFIER_AUTH);
 	const response = await fetch(verifierUrl.toString());
 	return (await response.json()) as VerifierResult;
 }
@@ -21,7 +21,7 @@ type SendMagicLinkEmail = {
 	magicLink: string;
 };
 
-const resend = new Resend(env.RESEND_API_KEY);
+const resend = new Resend(RESEND_API_KEY);
 
 export async function sendMagicLinkEmail({
 	domainUrl,

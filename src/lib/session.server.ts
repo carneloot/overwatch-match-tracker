@@ -32,7 +32,7 @@ const sessionStorage = createCookieSessionStorage<SessionData>({
 });
 
 async function getUserFromSessionId(sessionId: string) {
-	const { session, user } = db
+	const { session, user } = await db
 		.select({
 			session: sessionsTable,
 			user: usersTable
@@ -47,7 +47,7 @@ async function getUserFromSessionId(sessionId: string) {
 	}
 
 	if (Date.now() > session.expires.getTime()) {
-		db.delete(sessionsTable).where(eq(sessionsTable.id, sessionId)).run();
+		await db.delete(sessionsTable).where(eq(sessionsTable.id, sessionId)).run();
 		throw new Error('Session expired. Please request a new magic link.');
 	}
 
@@ -67,7 +67,7 @@ function createSession(userId: string) {
 }
 
 async function deleteSession(sessionId: string) {
-	db.delete(sessionsTable).where(eq(sessionsTable.id, sessionId)).run();
+	await db.delete(sessionsTable).where(eq(sessionsTable.id, sessionId)).run();
 }
 
 async function getSession(event: RequestEvent) {

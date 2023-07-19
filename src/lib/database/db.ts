@@ -1,8 +1,10 @@
-import { drizzle } from 'drizzle-orm/better-sqlite3';
-import Database from 'better-sqlite3';
+import { createClient } from '@libsql/client';
+import { DATABASE_URL, DATABASE_AUTH_TOKEN } from '$env/static/private';
+import { drizzle } from 'drizzle-orm/libsql';
 
-import { env } from '$env/dynamic/private';
+const client = createClient({
+	url: DATABASE_URL,
+	authToken: DATABASE_AUTH_TOKEN
+});
 
-const sqlite = new Database(env.DATABASE_URL);
-
-export const db = drizzle(sqlite);
+export const db = drizzle(client);

@@ -4,14 +4,14 @@ import { eq } from 'drizzle-orm';
 import { v4 as uuid } from 'uuid';
 
 async function upsertUser(email: string) {
-	let user = db
+	let user = await db
 		.select({ id: usersTable.id })
 		.from(usersTable)
 		.where(eq(usersTable.email, email))
 		.get();
 
 	if (!user) {
-		user = db
+		user = await db
 			.insert(usersTable)
 			.values({
 				id: uuid(),
