@@ -43,9 +43,8 @@ type NewMatch = z.infer<typeof newMatchSchema>;
 async function createNewMatch(newMatch: NewMatch) {
 	const newId = uuid();
 
-	await db.transaction(async (tx) => {
-		await tx
-			.insert(matchesTable)
+	db.transaction((tx) => {
+		tx.insert(matchesTable)
 			.values({
 				id: newId,
 				modality: newMatch.modality,
@@ -60,8 +59,7 @@ async function createNewMatch(newMatch: NewMatch) {
 			.run();
 
 		if (newMatch.accounts.length) {
-			await tx
-				.insert(accountsMatchesTable)
+			tx.insert(accountsMatchesTable)
 				.values(
 					newMatch.accounts.map((accountId) => ({
 						id: uuid(),
@@ -72,8 +70,7 @@ async function createNewMatch(newMatch: NewMatch) {
 				.run();
 		}
 
-		await tx
-			.insert(heroesMatchesTable)
+		tx.insert(heroesMatchesTable)
 			.values(newMatch.heroes.map((hero) => ({ id: uuid(), matchId: newId, hero })))
 			.run();
 	});

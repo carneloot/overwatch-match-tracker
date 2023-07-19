@@ -11,14 +11,8 @@ import { accountsTable, rankUpdatesTable } from '$lib/database/schema';
 import { jsonParse } from '$lib/utils';
 import { requireUser } from '$lib/session.server';
 
-async function getRankUpdate(rankUpdateId: string) {
-	const [rankUpdate] = await db
-		.select()
-		.from(rankUpdatesTable)
-		.where(eq(rankUpdatesTable.id, rankUpdateId))
-		.all();
-
-	return rankUpdate;
+function getRankUpdate(rankUpdateId: string) {
+	return db.select().from(rankUpdatesTable).where(eq(rankUpdatesTable.id, rankUpdateId)).get();
 }
 
 async function getAccountsByUser(userId: string) {
@@ -29,7 +23,7 @@ async function getAccountsByUser(userId: string) {
 		.orderBy(desc(rankUpdatesTable.time), rankUpdatesTable.role, rankUpdatesTable.modality)
 		.as('rankUpdates');
 
-	const accounts = await db
+	const accounts = db
 		.select({
 			id: accountsTable.id,
 			battleTag: accountsTable.battleTag,
@@ -42,32 +36,28 @@ async function getAccountsByUser(userId: string) {
 		.groupBy(accountsTable.id)
 		.all();
 
-	return Promise.all(
-		accounts.map(async (account) => {
-			const rankUpdates = await Promise.all(
-				jsonParse<string[]>(account.rankUpdates ?? '[]')
-					.filter(Boolean)
-					.map(getRankUpdate)
-			);
+	return accounts.map((account) => {
+		const rankUpdates = jsonParse<string[]>(account.rankUpdates ?? '[]')
+			.filter(Boolean)
+			.map(getRankUpdate);
 
-			rankUpdates.sort((a, b) => {
-				if (!a.role) {
-					return -1;
-				}
+		rankUpdates.sort((a, b) => {
+			if (!a.role) {
+				return -1;
+			}
 
-				if (!b.role) {
-					return 1;
-				}
+			if (!b.role) {
+				return 1;
+			}
 
-				return a.role.localeCompare(b.role);
-			});
+			return a.role.localeCompare(b.role);
+		});
 
-			return {
-				...account,
-				rankUpdates
-			};
-		})
-	);
+		return {
+			...account,
+			rankUpdates
+		};
+	});
 }
 
 export const load = (async (event) => {
@@ -107,7 +97,7 @@ export const actions = {
 
 		const { data } = parseResult;
 
-		await selectAccount({
+		selectAccount({
 			userId: user.id,
 			accountId: data.accountId
 		});
