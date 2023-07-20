@@ -93,7 +93,9 @@ const newRankUpdateSchema = z
 				});
 			}
 
-			if (!percentage) {
+			const isGM1 = tier === 'grandmaster' && division === 1;
+
+			if (!percentage && !isGM1) {
 				ctx.addIssue({
 					code: 'custom',
 					message: 'Percentage is required',
