@@ -39,38 +39,57 @@ export const usersTable = sqliteTable(
 
 export type User = InferModel<typeof usersTable, 'select'>;
 
-export const sessionsTable = sqliteTable('sessions', {
-	id: text('id').primaryKey(),
-	userId: text('user_id')
-		.references(() => usersTable.id)
-		.notNull(),
-	expires: integer('expires', { mode: 'timestamp' }).notNull()
-});
+export const sessionsTable = sqliteTable(
+	'sessions',
+	{
+		id: text('id').primaryKey(),
+		userId: text('user_id')
+			.references(() => usersTable.id)
+			.notNull(),
+		expires: integer('expires', { mode: 'timestamp' }).notNull()
+	},
+	(self) => ({
+		userIdIdx: index('sessionUserIdIdx').on(self.userId)
+	})
+);
 
-export const accountsTable = sqliteTable('accounts', {
-	id: text('id').primaryKey(),
-	userId: text('user_id')
-		.references(() => usersTable.id)
-		.notNull(),
-	battleTag: text('battle_tag'),
-	selected: integer('selected', { mode: 'boolean' }).default(false)
-});
+export const accountsTable = sqliteTable(
+	'accounts',
+	{
+		id: text('id').primaryKey(),
+		userId: text('user_id')
+			.references(() => usersTable.id)
+			.notNull(),
+		battleTag: text('battle_tag'),
+		selected: integer('selected', { mode: 'boolean' }).default(false)
+	},
+	(self) => ({
+		userIdIdx: index('userIdIdx').on(self.userId)
+	})
+);
 
-export const rankUpdatesTable = sqliteTable('rank_updates', {
-	id: text('id').primaryKey(),
-	accountId: text('account_id')
-		.references(() => accountsTable.id)
-		.notNull(),
-	matchId: text('match_id').references(() => matchesTable.id),
-	seasonalUpdate: text('seasonal_update').$type<SeasonalUpdate>(),
-	season: text('season').notNull().$type<OverwatchSeasonSlug>(),
-	modality: text('modality').notNull(),
-	role: text('role').$type<HeroRole>(),
-	time: integer('time', { mode: 'timestamp' }).notNull(),
-	tier: text('tier').notNull().$type<SkillTier>(),
-	division: integer('division').notNull(),
-	percentage: integer('percentage')
-});
+export const rankUpdatesTable = sqliteTable(
+	'rank_updates',
+	{
+		id: text('id').primaryKey(),
+		accountId: text('account_id')
+			.references(() => accountsTable.id, { onDelete: 'cascade' })
+			.notNull(),
+		matchId: text('match_id').references(() => matchesTable.id, { onDelete: 'cascade' }),
+		seasonalUpdate: text('seasonal_update').$type<SeasonalUpdate>(),
+		season: text('season').notNull().$type<OverwatchSeasonSlug>(),
+		modality: text('modality').notNull(),
+		role: text('role').$type<HeroRole>(),
+		time: integer('time', { mode: 'timestamp' }).notNull(),
+		tier: text('tier').notNull().$type<SkillTier>(),
+		division: integer('division').notNull(),
+		percentage: integer('percentage')
+	},
+	(self) => ({
+		accountIdIdx: index('rankUpdateAccountIdIdx').on(self.accountId),
+		matchIdIdx: index('rankUpdateMatchIdIdx').on(self.matchId)
+	})
+);
 
 export type RankUpdate = InferModel<typeof rankUpdatesTable, 'select'>;
 
@@ -79,7 +98,7 @@ export const matchesTable = sqliteTable(
 	{
 		id: text('id').primaryKey(),
 		accountId: text('account_id')
-			.references(() => accountsTable.id)
+			.references(() => accountsTable.id, { onDelete: 'cascade' })
 			.notNull(),
 		map: text('map').notNull().$type<OverwatchMapSlug>(),
 		season: text('season').notNull().$type<OverwatchSeasonSlug>(),
@@ -90,7 +109,8 @@ export const matchesTable = sqliteTable(
 		averageDivision: integer('average_division')
 	},
 	(self) => ({
-		accountIdIdx: index('accountIdIdx').on(self.accountId)
+		accountIdIdx: index('accountIdIdx').on(self.accountId),
+		seasonIdx: index('seasonIdx').on(self.season)
 	})
 );
 
@@ -99,14 +119,15 @@ export const accountsMatchesTable = sqliteTable(
 	{
 		id: text('id').primaryKey(),
 		matchId: text('match_id')
-			.references(() => matchesTable.id)
+			.references(() => matchesTable.id, { onDelete: 'cascade' })
 			.notNull(),
 		accountId: text('account_id')
-			.references(() => accountsTable.id)
+			.references(() => accountsTable.id, { onDelete: 'cascade' })
 			.notNull()
 	},
 	(self) => ({
-		matchIdIdx: index('accMtchMatchIdIdx').on(self.matchId)
+		matchIdIdx: index('accMtchMatchIdIdx').on(self.matchId),
+		accountIdIdx: index('accMtchAccountIdIdx').on(self.accountId)
 	})
 );
 
@@ -115,7 +136,7 @@ export const heroesMatchesTable = sqliteTable(
 	{
 		id: text('id').primaryKey(),
 		matchId: text('match_id')
-			.references(() => matchesTable.id)
+			.references(() => matchesTable.id, { onDelete: 'cascade' })
 			.notNull(),
 		hero: text('hero').notNull().$type<OverwatchHeroSlug>()
 	},
