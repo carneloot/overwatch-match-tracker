@@ -1,13 +1,13 @@
 <script>
 	import { Plus, Ban } from 'lucide-svelte';
-	import RankUpdate from '$lib/components/RankUpdate.svelte';
 	import { enhance } from '$app/forms';
+
+	import RankUpdate from '$lib/components/RankUpdate.svelte';
 
 	export let data;
 
 	const noAccounts = !data.accounts.length;
-
-	$: missingSelected = !noAccounts && data.accounts.every((account) => !account.selected);
+	const missingSelected = !data.selectedAccountId;
 </script>
 
 <svelte:head>
@@ -42,7 +42,7 @@
 		<div class="card card-hover grid grid-rows-[auto_1fr_auto] overflow-hidden">
 			<header class="card-header flex gap-2">
 				<span>{account.battleTag}</span>
-				{#if account.selected}
+				{#if account.id === data.selectedAccountId}
 					<span class="badge variant-filled-success">Selected</span>
 				{/if}
 			</header>

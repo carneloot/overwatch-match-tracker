@@ -5,11 +5,10 @@ import { z } from 'zod';
 
 import type { Actions, PageServerLoad } from './$types';
 
-import { deleteAccount, selectAccount } from '$lib/account.server';
 import { db } from '$lib/database/db';
 import { accountsTable, rankUpdatesTable } from '$lib/database/schema';
 import { jsonParse } from '$lib/utils';
-import { requireUser } from '$lib/session.server';
+import { getSession, requireUser } from '$lib/session.server';
 
 async function getRankUpdate(rankUpdateId: string) {
 	const [rankUpdate] = await db
@@ -33,7 +32,6 @@ async function getAccountsByUser(userId: string) {
 		.select({
 			id: accountsTable.id,
 			battleTag: accountsTable.battleTag,
-			selected: accountsTable.selected,
 			rankUpdates: sql<string | null>`json_group_array(${rankUpdates.id})`
 		})
 		.from(accountsTable)
@@ -73,14 +71,21 @@ async function getAccountsByUser(userId: string) {
 export const load = (async (event) => {
 	const user = await requireUser(event);
 
+	const { getActiveAccountId } = await getSession(event);
+
 	return {
-		accounts: getAccountsByUser(user.id)
+		accounts: getAccountsByUser(user.id),
+		selectedAccountId: getActiveAccountId()
 	};
 }) satisfies PageServerLoad;
 
 const actionSchema = z.object({
 	accountId: z.string().uuid()
 });
+
+async function deleteAccount(accountId: string) {
+	await db.delete(accountsTable).where(eq(accountsTable.id, accountId)).run();
+}
 
 export const actions = {
 	delete: async (event) => {
@@ -97,7 +102,7 @@ export const actions = {
 		await deleteAccount(data.accountId);
 	},
 	select: async (event) => {
-		const user = await requireUser(event);
+		await requireUser(event);
 
 		const formData = Object.fromEntries(await event.request.formData());
 		const parseResult = actionSchema.safeParse(formData);
@@ -107,9 +112,10 @@ export const actions = {
 
 		const { data } = parseResult;
 
-		await selectAccount({
-			userId: user.id,
-			accountId: data.accountId
-		});
+		const { setActiveAccountId, sendCookie } = await getSession(event);
+
+		setActiveAccountId(data.accountId);
+
+		await sendCookie(event);
 	}
 } satisfies Actions;

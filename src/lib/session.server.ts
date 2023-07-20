@@ -1,12 +1,12 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import { redirect } from '@sveltejs/kit';
 
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { v4 as uuid } from 'uuid';
 
 import * as constants from '$lib/constants';
 
-import { sessionsTable, type User, usersTable } from '$lib/database/schema';
+import { accountsTable, sessionsTable, type User, usersTable } from '$lib/database/schema';
 import { createCookieSessionStorage } from '$lib/session-storage/sessions';
 import { validateMagicLink } from '$lib/magic-link.server';
 import { SESSION_SECRET } from '$env/static/private';
@@ -17,6 +17,7 @@ const sessionIdKey = '__session_id__' as const;
 
 type SessionData = {
 	[sessionIdKey]: string | undefined;
+	activeAccountId: string | undefined;
 };
 
 const sessionStorage = createCookieSessionStorage<SessionData>({
@@ -34,8 +35,10 @@ const sessionStorage = createCookieSessionStorage<SessionData>({
 async function getUserFromSessionId(sessionId: string) {
 	const { session, user } = await db
 		.select({
-			session: sessionsTable,
-			user: usersTable
+			user: usersTable,
+			session: {
+				expires: sessionsTable.expires
+			}
 		})
 		.from(sessionsTable)
 		.innerJoin(usersTable, eq(sessionsTable.userId, usersTable.id))
@@ -70,6 +73,16 @@ async function deleteSession(sessionId: string) {
 	await db.delete(sessionsTable).where(eq(sessionsTable.id, sessionId)).run();
 }
 
+async function getDefaultActiveAccount(id: string) {
+	return db
+		.select({
+			id: accountsTable.id
+		})
+		.from(accountsTable)
+		.where(and(eq(accountsTable.selected, true), eq(accountsTable.userId, id)))
+		.get();
+}
+
 async function getSession(event: RequestEvent) {
 	const session = await sessionStorage.getSession(event);
 	const initialValue = await sessionStorage.commitSession(session);
@@ -102,6 +115,9 @@ async function getSession(event: RequestEvent) {
 		signIn: async (user: Pick<User, 'id'>) => {
 			const userSession = await createSession(user.id);
 			session.set(sessionIdKey, userSession.id);
+
+			const activeAccount = await getDefaultActiveAccount(user.id);
+			session.set('activeAccountId', activeAccount?.id ?? undefined);
 		},
 
 		signOut: async () => {
@@ -110,6 +126,13 @@ async function getSession(event: RequestEvent) {
 
 			unsetSessionId();
 			await deleteSession(sessionId);
+		},
+
+		getActiveAccountId: () => {
+			return session.get('activeAccountId');
+		},
+		setActiveAccountId: (newId: string) => {
+			session.set('activeAccountId', newId);
 		},
 
 		sendCookie: async (event: RequestEvent) => {

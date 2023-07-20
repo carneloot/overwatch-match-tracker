@@ -6,7 +6,6 @@ import { z } from 'zod';
 
 import type { PageServerLoad } from './$types';
 
-import { getSelectedAccountByUser } from '$lib/account.server';
 import {
 	SeasonalUpdate,
 	SkillTier,
@@ -17,7 +16,7 @@ import {
 import { HeroRole, heroes } from '$lib/data/heroes';
 import { db } from '$lib/database/db';
 import { currentSeason } from '$lib/data/seasons';
-import { requireUser } from '$lib/session.server';
+import { getSession, requireUser } from '$lib/session.server';
 
 const getMatch = async (matchId: string) => {
 	const [match] = await db
@@ -36,9 +35,9 @@ const getMatch = async (matchId: string) => {
 };
 
 export const load = (async (event) => {
-	const user = await requireUser(event);
+	await requireUser(event);
 
-	const activeAccount = await getSelectedAccountByUser(user.id);
+	const { getActiveAccountId } = await getSession(event);
 
 	const matchId = event.url.searchParams.get('matchId');
 	const match = matchId ? await getMatch(matchId) : undefined;
@@ -49,7 +48,7 @@ export const load = (async (event) => {
 		: undefined;
 
 	const initialValues = {
-		accountId: activeAccount.id,
+		accountId: getActiveAccountId(),
 		matchId: matchId ?? undefined,
 		time: match?.time ?? new Date(),
 		modality: match?.modality ?? undefined,

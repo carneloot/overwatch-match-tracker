@@ -11,15 +11,16 @@ import {
 	matchesTable,
 	accountsMatchesTable,
 	heroesMatchesTable,
-	SkillTier
+	SkillTier,
+	accountsTable
 } from '$lib/database/schema';
-import { getAccountsByUser, getSelectedAccountByUser } from '$lib/account.server';
 import { getNewMatchValues, setNewMatchValues } from '$lib/sessions/new-match.session';
-import { requireUser } from '$lib/session.server';
+import { getSession, requireUser } from '$lib/session.server';
 import { OverwatchHeroEnum } from '$lib/data/heroes';
 import { OverwatchMapEnum } from '$lib/data/maps';
 import { currentSeason } from '$lib/data/seasons';
 import { db } from '$lib/database/db';
+import { eq } from 'drizzle-orm';
 
 const newMatchSchema = z.object({
 	accountId: z.string().uuid(),
@@ -79,18 +80,27 @@ async function createNewMatch(newMatch: NewMatch) {
 	});
 }
 
+function getAccountsByUser(userId: string) {
+	return db
+		.select()
+		.from(accountsTable)
+		.where(eq(accountsTable.userId, userId))
+		.orderBy(accountsTable.battleTag)
+		.all();
+}
+
 export const load = (async (event) => {
 	const user = await requireUser(event);
 
 	const currentTime = new Date();
 
-	const userAccount = await getSelectedAccountByUser(user.id);
+	const { getActiveAccountId } = await getSession(event);
 
 	const storedData = await getNewMatchValues(event);
 
 	const initialValues = {
 		time: currentTime,
-		accountId: userAccount.id,
+		accountId: getActiveAccountId(),
 		result: 'win',
 		...storedData
 	} satisfies Partial<NewMatch>;
