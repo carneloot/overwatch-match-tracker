@@ -9,7 +9,7 @@
 
 <header class="flex w-full justify-between bg-surface-100 px-7 py-5">
 	<h1 class="text-medium text-3xl">
-		<a href="/"> Ovewatch Match Tracker </a>
+		<a href="/">Overwatch Match Tracker</a>
 	</h1>
 
 	<nav>
