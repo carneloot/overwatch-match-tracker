@@ -12,11 +12,10 @@ import { usersTable } from '$lib/database/schema';
 import { getDomainUrl } from '$lib/utils';
 import { getMagicLink, sendMagicLink } from '$lib/magic-link.server';
 import { dev } from '$app/environment';
-import { verifyCaptcha } from '$lib/captcha.server';
 
 const LoginSchema = z.object({
 	email: z.string().nonempty().max(64).email(),
-	'h-captcha-response': z.string()
+	password: z.string().length(0)
 });
 
 async function isEmailVerified(
@@ -60,7 +59,7 @@ export const actions = {
 			return fail(400, { form });
 		}
 
-		const { email, 'h-captcha-response': captcha } = form.data;
+		const { email } = form.data;
 
 		try {
 			const verifiedStatus = await isEmailVerified(email);
@@ -74,11 +73,6 @@ export const actions = {
 			}
 		} catch (error: unknown) {
 			console.error('Error verifying the email', error);
-		}
-
-		const captchaStatus = await verifyCaptcha(captcha);
-		if (!captchaStatus.success) {
-			return fail(400, { form });
 		}
 
 		const domainUrl = getDomainUrl(event);

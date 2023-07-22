@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { superForm } from 'sveltekit-superforms/client';
 
-	import { PUBLIC_HCAPTCHA_SITE_KEY } from '$env/static/public';
-
 	import GoogleIcon from './GoogleIcon.svelte';
 
 	export let data;
@@ -12,7 +10,6 @@
 
 <svelte:head>
 	<title>Login</title>
-	<script src="https://js.hcaptcha.com/1/api.js"></script>
 </svelte:head>
 
 <div class="grid h-full place-items-center">
@@ -44,7 +41,10 @@
 					{...$constraints.email}
 				/>
 			</label>
-			<div class="h-captcha flex justify-center" data-sitekey={PUBLIC_HCAPTCHA_SITE_KEY} />
+			<label class="absolute left-[-999999999999px]">
+				<span>Password</span>
+				<input type="password" name="password" autocomplete="off" />
+			</label>
 			<button type="submit" class="btn variant-ghost">Login with email</button>
 		</form>
 	</div>
