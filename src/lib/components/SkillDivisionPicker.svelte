@@ -14,7 +14,14 @@
 </script>
 
 {#if isTop500}
-	<input class="input" type="number" bind:value {name} min={1} max={500} />
+	<input
+		class="input !mt-2 !rounded-container-token"
+		type="number"
+		bind:value
+		{name}
+		min={1}
+		max={500}
+	/>
 {:else}
 	<RadioGroup
 		rounded="rounded-container-token"
