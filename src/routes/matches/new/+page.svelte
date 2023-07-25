@@ -100,7 +100,6 @@
 				class="input !mt-2 !rounded-container-token"
 				name="time"
 				value={dateToDatetimeLocal($form.time)}
-				on:input={(e) => ($form.time = new Date(e.currentTarget.value))}
 				{...$constraints.time}
 			/>
 		</label>
