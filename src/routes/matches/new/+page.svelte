@@ -67,7 +67,7 @@
 				{#each heroesByRole as role}
 					<optgroup label={heroRole[role.name]}>
 						{#each role.values as hero}
-							<option value={hero.slug}>{hero.name}</option>
+							<option value={hero.slug} class="!pl-4">{hero.name}</option>
 						{/each}
 					</optgroup>
 				{/each}

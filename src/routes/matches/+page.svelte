@@ -62,7 +62,7 @@
 		{@const map = maps[match.map]}
 		{@const modality = seasons[match.season].modalities[match.modality]}
 		<div
-			class="mb-4 grid h-20 w-full grid-cols-[2fr_1fr_0.7fr_1fr_1fr_1fr_auto] gap-5 overflow-hidden rounded-lg bg-surface-100 uppercase"
+			class="mb-4 grid h-20 w-full grid-cols-[2fr_1fr_0.7fr_1fr_1fr_1fr_auto] gap-5 overflow-hidden rounded-lg bg-surface-100 uppercase dark:bg-surface-700"
 		>
 			<!-- Map -->
 			<div

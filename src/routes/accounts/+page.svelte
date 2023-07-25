@@ -23,7 +23,7 @@
 </div>
 
 {#if missingSelected}
-	<div class="variant-ghost-error alert mb-6">
+	<div class="alert variant-ghost-error mb-6">
 		<div>
 			<Ban size={20} />
 		</div>
@@ -47,7 +47,7 @@
 				{/if}
 			</header>
 
-			<div class="m-2 rounded-lg bg-surface-200 p-2">
+			<div class="m-2 rounded-lg bg-surface-200 p-2 dark:bg-surface-700">
 				<span class="h4 mb-2">Ranks</span>
 				{#if !account.rankUpdates.length}
 					<div class="grid grid-cols-1 place-content-end gap-1">

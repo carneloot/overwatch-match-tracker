@@ -5,6 +5,6 @@ body {
 	@apply h-full;
 }
 
-.link {
-	@apply text-tertiary-800 hover:text-tertiary-600;
+.anchor {
+	@apply no-underline hover:text-primary-700;
 }

@@ -16,7 +16,7 @@
 	<div class="card flex flex-col justify-center gap-3 px-10 py-8 sm:w-[400px]">
 		<h2 class="h2 mb-5">Login</h2>
 		<form action="/auth/google" class="contents">
-			<button type="submit" class="dark btn bg-white">
+			<button type="submit" class="btn bg-white text-neutral-800">
 				<span><GoogleIcon /></span>
 				<span>Continue with Google</span>
 			</button>
