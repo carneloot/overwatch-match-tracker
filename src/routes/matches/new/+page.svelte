@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { RadioGroup, RadioItem } from '@skeletonlabs/skeleton';
+	import { RadioGroup, RadioItem, SlideToggle } from '@skeletonlabs/skeleton';
 
 	import { superForm } from 'sveltekit-superforms/client';
 
@@ -16,6 +16,8 @@
 	export let data;
 
 	const { form, errors, enhance, constraints } = superForm(data.form);
+
+	let showAverageRank = false;
 </script>
 
 <svelte:head>
@@ -25,7 +27,7 @@
 <h2 class="h2 mb-5">New Match</h2>
 
 <form method="POST" class="card w-full p-6" use:enhance>
-	<div class="mb-3 grid gap-3 lg:grid-cols-2">
+	<section class="mb-3 grid gap-3 lg:grid-cols-2">
 		<label class="label">
 			<span>Modality</span>
 			<select
@@ -141,23 +143,36 @@
 				</RadioItem>
 			</RadioGroup>
 		</label>
+	</section>
 
-		<!-- svelte-ignore a11y-label-has-associated-control -->
-		<label class="label">
-			<span>Average Skill Tier</span>
-			<SkillTierPicker bind:value={$form.averageTier} name="averageTier" />
-		</label>
+	<section class="mb-3 flex flex-col">
+		<div class="mb-3 flex items-center justify-between">
+			<h3 class="text-2xl">Average Rank</h3>
+			<SlideToggle name="averageRankToggle" size="sm" bind:checked={showAverageRank}>
+				Show average rank
+			</SlideToggle>
+		</div>
+		{#if showAverageRank}
+			<div class="grid gap-3 lg:grid-cols-2">
+				<!-- svelte-ignore a11y-label-has-associated-control -->
+				<label class="label">
+					<span>Average Skill Tier</span>
+					<SkillTierPicker bind:value={$form.averageTier} name="averageTier" />
+				</label>
 
-		<!-- svelte-ignore a11y-label-has-associated-control -->
-		<label class="label">
-			<span>Average Division</span>
-			<SkillDivisionPicker
-				name="averageDivision"
-				bind:value={$form.averageDivision}
-				isTop500={$form.averageTier === 'top500'}
-			/>
-		</label>
-	</div>
+				<!-- svelte-ignore a11y-label-has-associated-control -->
+				<label class="label">
+					<span>Average Division</span>
+					<SkillDivisionPicker
+						name="averageDivision"
+						bind:value={$form.averageDivision}
+						isTop500={$form.averageTier === 'top500'}
+					/>
+				</label>
+			</div>
+		{/if}
+	</section>
+
 	<div class="flex flex-row justify-end">
 		<input type="hidden" name="accountId" bind:value={$form.accountId} />
 		<button type="submit" class="btn variant-filled-primary">Create</button>
