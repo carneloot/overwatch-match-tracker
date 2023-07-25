@@ -11,7 +11,7 @@
 
 <RadioGroup
 	rounded="rounded-container-token"
-	display="inline-grid grid-cols-4"
+	display="inline-grid grid-cols-2 sm:grid-cols-4"
 	class={cn('w-full', $$props.class)}
 >
 	<RadioItem
