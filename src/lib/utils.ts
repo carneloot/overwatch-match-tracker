@@ -23,13 +23,6 @@ export function groupByField<Type, Key extends keyof Type>(
 	);
 }
 
-export function dateToDatetimeLocal(date: Date | null): string {
-	if (!date) return '';
-	const copyDate = new Date(date);
-	copyDate.setMinutes(copyDate.getMinutes() - copyDate.getTimezoneOffset());
-	return copyDate?.toISOString().slice(0, 16) ?? '';
-}
-
 export function jsonParse<T = unknown>(value: string) {
 	return JSON.parse(value) as T;
 }
@@ -47,3 +40,6 @@ export function getDomainUrl({ request }: RequestEvent) {
 	const protocol = host.includes('localhost') ? 'http' : 'https';
 	return `${protocol}://${host}`;
 }
+
+export const DATETIME_LOCAL_FORMAT = "yyyy-MM-dd'T'HH:mm";
+export const DATETIME_LOCAL_REGEX = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;

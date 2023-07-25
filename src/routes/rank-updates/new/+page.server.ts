@@ -1,5 +1,7 @@
 import { redirect, type Actions, fail } from '@sveltejs/kit';
+
 import { superValidate } from 'sveltekit-superforms/server';
+import { format, parse } from 'date-fns';
 import { v4 as uuid } from 'uuid';
 import { eq } from 'drizzle-orm';
 import { z } from 'zod';
@@ -17,6 +19,7 @@ import { HeroRole, heroes } from '$lib/data/heroes';
 import { db } from '$lib/database/db';
 import { currentSeason } from '$lib/data/seasons';
 import { getSession, requireUser } from '$lib/session.server';
+import { DATETIME_LOCAL_FORMAT, DATETIME_LOCAL_REGEX } from '$lib/utils';
 
 const getMatch = async (matchId: string) => {
 	const [match] = await db
@@ -50,7 +53,7 @@ export const load = (async (event) => {
 	const initialValues = {
 		accountId: getActiveAccountId(),
 		matchId: matchId ?? undefined,
-		time: match?.time ?? new Date(),
+		time: format(match?.time ?? new Date(), DATETIME_LOCAL_FORMAT),
 		modality: match?.modality ?? undefined,
 		division: 3,
 		percentage: 50,
@@ -69,7 +72,7 @@ const newRankUpdateSchema = z
 		seasonalUpdate: SeasonalUpdate.optional(),
 		modality: z.string(),
 		role: HeroRole.optional(),
-		time: z.coerce.date(),
+		time: z.string().regex(DATETIME_LOCAL_REGEX),
 		tier: SkillTier,
 		division: z.number().int().min(1).max(500),
 		percentage: z.number().int().min(1).max(100).optional()
@@ -111,6 +114,7 @@ async function createRankUpdate(data: NewRankUpdate) {
 		.values({
 			id: uuid(),
 			...data,
+			time: parse(data.time, DATETIME_LOCAL_FORMAT, new Date()),
 			season: currentSeason.slug
 		})
 		.run();

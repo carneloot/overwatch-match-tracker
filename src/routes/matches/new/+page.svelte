@@ -6,7 +6,6 @@
 	import SkillDivisionPicker from '$lib/components/SkillDivisionPicker.svelte';
 	import SkillTierPicker from '$lib/components/SkillTierPicker.svelte';
 
-	import { dateToDatetimeLocal } from '$lib/utils';
 	import { heroesByRole } from '$lib/data/heroes';
 	import { mapsByType } from '$lib/data/maps';
 	import { currentSeason } from '$lib/data/seasons';
@@ -101,7 +100,7 @@
 				type="datetime-local"
 				class="input !mt-2 !rounded-container-token"
 				name="time"
-				value={dateToDatetimeLocal($form.time)}
+				bind:value={$form.time}
 				{...$constraints.time}
 			/>
 		</label>

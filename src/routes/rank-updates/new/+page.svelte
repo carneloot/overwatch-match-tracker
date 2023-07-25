@@ -8,7 +8,6 @@
 
 	import { heroRole, seasonalUpdate } from '$lib/prettify';
 	import { currentSeason } from '$lib/data/seasons';
-	import { dateToDatetimeLocal } from '$lib/utils';
 
 	export let data;
 
@@ -71,7 +70,7 @@
 					type="datetime-local"
 					class="input !mt-2 !rounded-container-token"
 					name="time"
-					value={dateToDatetimeLocal($form.time)}
+					bind:value={$form.time}
 					{...$constraints.time}
 				/>
 			</label>
@@ -136,7 +135,7 @@
 		<input type="hidden" name="accountId" bind:value={$form.accountId} />
 		{#if $form.matchId}
 			<input type="hidden" name="matchId" bind:value={$form.matchId} />
-			<input type="hidden" name="time" value={$form.time.toISOString()} />
+			<input type="hidden" name="time" bind:value={$form.time} />
 			<input type="hidden" name="modality" bind:value={$form.modality} />
 			<input type="hidden" name="role" bind:value={$form.role} />
 		{/if}
