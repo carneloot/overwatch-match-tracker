@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { Plus } from 'lucide-svelte';
+	import { Plus, MoreVertical, Download } from 'lucide-svelte';
 
 	import Img from '@zerodevx/svelte-img';
-	import { Paginator } from '@skeletonlabs/skeleton';
+	import { Paginator, popup, type PopupSettings } from '@skeletonlabs/skeleton';
 	import type { PaginatorProps } from '@skeletonlabs/skeleton/dist/components/Paginator/Paginator.svelte';
 
 	import { formatDistanceToNowStrict } from 'date-fns';
@@ -36,6 +36,12 @@
 		}
 		goto(`${$page.url.pathname}?${searchParams}`, { invalidateAll: true });
 	}
+
+	const optionsPopupClick = {
+		event: 'click',
+		target: 'menuPopup',
+		placement: 'bottom-end'
+	} satisfies PopupSettings;
 </script>
 
 <svelte:head>
@@ -44,10 +50,16 @@
 
 <div class="mb-6 flex justify-between">
 	<h2 class="h2">Matches</h2>
-	<a href="/matches/new" class="btn variant-filled-primary text-white">
-		<span><Plus size={20} /></span>
-		<span>New Match</span>
-	</a>
+	<div class="flex gap-2">
+		<a href="/matches/new" class="btn variant-filled-primary">
+			<span><Plus size={20} /></span>
+			<span>New Match</span>
+		</a>
+
+		<button class="bg-initial btn-icon" use:popup={optionsPopupClick}>
+			<MoreVertical size={20} />
+		</button>
+	</div>
 </div>
 
 <div class="mb-6">
@@ -162,3 +174,14 @@
 		justify="justify-center"
 	/>
 {/if}
+
+<div
+	class="list-nav z-10 flex flex-col gap-1 rounded bg-surface-200 p-2 shadow"
+	data-popup="menuPopup"
+>
+	<div class="arrow bg-surface-200" />
+	<a href="/matches/import">
+		<span><Download size={20} /></span>
+		<span>Import data</span>
+	</a>
+</div>
