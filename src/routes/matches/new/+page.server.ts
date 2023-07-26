@@ -2,8 +2,8 @@ import { fail, redirect } from '@sveltejs/kit';
 
 import { superValidate } from 'sveltekit-superforms/server';
 import { v4 as uuid } from 'uuid';
+import { eq } from 'drizzle-orm';
 import { z } from 'zod';
-import { format, parse } from 'date-fns';
 
 import type { Actions, PageServerLoad } from './$types';
 
@@ -21,8 +21,6 @@ import { OverwatchHeroEnum } from '$lib/data/heroes';
 import { OverwatchMapEnum } from '$lib/data/maps';
 import { currentSeason } from '$lib/data/seasons';
 import { db } from '$lib/database/db';
-import { eq } from 'drizzle-orm';
-import { DATETIME_LOCAL_FORMAT, DATETIME_LOCAL_REGEX } from '$lib/utils';
 
 const newMatchSchema = z.object({
 	accountId: z.string().uuid(),
@@ -36,7 +34,7 @@ const newMatchSchema = z.object({
 	result: MatchResult,
 	averageTier: SkillTier.optional(),
 	averageDivision: z.number().int().min(1).max(500).optional(),
-	time: z.string().regex(DATETIME_LOCAL_REGEX)
+	time: z.coerce.date()
 });
 type NewMatch = z.infer<typeof newMatchSchema>;
 
@@ -51,7 +49,7 @@ async function createNewMatch(newMatch: NewMatch) {
 				modality: newMatch.modality,
 				accountId: newMatch.accountId,
 				map: newMatch.map,
-				time: parse(newMatch.time, DATETIME_LOCAL_FORMAT, new Date()),
+				time: newMatch.time,
 				season: currentSeason.slug,
 				result: newMatch.result,
 				averageTier: newMatch.averageTier,
@@ -91,14 +89,12 @@ function getAccountsByUser(userId: string) {
 export const load = (async (event) => {
 	const user = await requireUser(event);
 
-	const currentTime = format(new Date(), DATETIME_LOCAL_FORMAT);
-
 	const { getActiveAccountId } = await getSession(event);
 
 	const storedData = await getNewMatchValues(event);
 
 	const initialValues = {
-		time: currentTime,
+		time: new Date(),
 		accountId: getActiveAccountId(),
 		result: 'win',
 		...storedData

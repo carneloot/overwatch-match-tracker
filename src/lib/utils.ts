@@ -42,4 +42,3 @@ export function getDomainUrl({ request }: RequestEvent) {
 }
 
 export const DATETIME_LOCAL_FORMAT = "yyyy-MM-dd'T'HH:mm";
-export const DATETIME_LOCAL_REGEX = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;

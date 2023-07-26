@@ -5,6 +5,7 @@
 
 	import SkillDivisionPicker from '$lib/components/SkillDivisionPicker.svelte';
 	import SkillTierPicker from '$lib/components/SkillTierPicker.svelte';
+	import DateTimeInput from '$lib/components/DateTimeInput.svelte';
 
 	import { heroesByRole } from '$lib/data/heroes';
 	import { mapsByType } from '$lib/data/maps';
@@ -17,6 +18,11 @@
 	const { form, errors, enhance, constraints } = superForm(data.form);
 
 	let showAverageRank = false;
+
+	$: if (!showAverageRank) {
+		$form.averageDivision = undefined;
+		$form.averageTier = undefined;
+	}
 </script>
 
 <svelte:head>
@@ -94,15 +100,10 @@
 			</select>
 		</label>
 
+		<!-- svelte-ignore a11y-label-has-associated-control -->
 		<label class="label">
 			<span>Time</span>
-			<input
-				type="datetime-local"
-				class="input !mt-2 !rounded-container-token"
-				name="time"
-				bind:value={$form.time}
-				{...$constraints.time}
-			/>
+			<DateTimeInput name="time" bind:value={$form.time} {...$constraints.time} />
 		</label>
 
 		<!-- svelte-ignore a11y-label-has-associated-control -->

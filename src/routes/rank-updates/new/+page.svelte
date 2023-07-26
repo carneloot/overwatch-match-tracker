@@ -5,6 +5,7 @@
 
 	import SkillTierPicker from '$lib/components/SkillTierPicker.svelte';
 	import SkillDivisionPicker from '$lib/components/SkillDivisionPicker.svelte';
+	import DateTimeInput from '$lib/components/DateTimeInput.svelte';
 
 	import { heroRole, seasonalUpdate } from '$lib/prettify';
 	import { currentSeason } from '$lib/data/seasons';
@@ -64,15 +65,10 @@
 				</RadioGroup>
 			</label>
 
+			<!-- svelte-ignore a11y-label-has-associated-control -->
 			<label class="label">
 				<span>Time</span>
-				<input
-					type="datetime-local"
-					class="input !mt-2 !rounded-container-token"
-					name="time"
-					bind:value={$form.time}
-					{...$constraints.time}
-				/>
+				<DateTimeInput name="time" bind:value={$form.time} {...$constraints.time} />
 			</label>
 
 			{#if $form.modality === 'role-queue'}
@@ -135,7 +131,7 @@
 		<input type="hidden" name="accountId" bind:value={$form.accountId} />
 		{#if $form.matchId}
 			<input type="hidden" name="matchId" bind:value={$form.matchId} />
-			<input type="hidden" name="time" bind:value={$form.time} />
+			<input type="hidden" name="time" value={$form.time.toISOString()} />
 			<input type="hidden" name="modality" bind:value={$form.modality} />
 			<input type="hidden" name="role" bind:value={$form.role} />
 		{/if}
