@@ -3,6 +3,8 @@
 
 	import { page } from '$app/stores';
 
+	import { cn } from '$lib/utils';
+
 	const links = [
 		{ name: 'Matches', href: '/matches' },
 		{ name: 'Accounts', href: '/accounts' }
@@ -21,8 +23,11 @@
 			<ul class="flex flex-row items-center gap-3">
 				{#each links as link}
 					<li
-						class="grid place-items-center"
-						class:text-primary-800={$page.route.id?.startsWith(link.href) ?? false}
+						class={cn(
+							'grid place-items-center',
+							$page.route.id?.startsWith(link.href) &&
+								'text-primary-700 dark:text-primary-500'
+						)}
 					>
 						<a href={link.href} class="px-3 py-3">{link.name}</a>
 					</li>
