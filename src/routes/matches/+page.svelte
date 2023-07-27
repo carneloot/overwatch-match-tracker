@@ -143,7 +143,7 @@
 			<div
 				class="
 					group absolute right-0 z-10 flex h-full
-					w-auto translate-x-[calc(100%-24px)] items-center rounded-l-lg bg-surface-200
+					w-auto translate-x-[calc(100%-24px)] items-center rounded-l-lg bg-surface-300
 					shadow-2xl transition-transform hover:translate-x-0 dark:bg-surface-600
 				"
 			>
