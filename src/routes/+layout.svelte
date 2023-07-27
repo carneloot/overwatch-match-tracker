@@ -7,7 +7,12 @@
 
 	import Header from '$lib/components/Header.svelte';
 	import Footer from '$lib/components/Footer.svelte';
+
+	import { Modal } from '@skeletonlabs/skeleton';
+
 </script>
+
+<Modal />
 
 <div class="mx-auto grid h-full grid-rows-[auto_1fr_auto]">
 	<Header />

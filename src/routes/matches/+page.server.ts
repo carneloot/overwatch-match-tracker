@@ -1,7 +1,8 @@
-import { redirect } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 import { and, desc, eq, sql } from 'drizzle-orm';
+import { z } from 'zod';
 
-import type { PageServerLoad } from './$types';
+import type { Actions, PageServerLoad } from './$types';
 
 import {
 	accountsMatchesTable,
@@ -99,3 +100,27 @@ export const load = (async (event) => {
 		})
 	};
 }) satisfies PageServerLoad;
+
+const DeleteMatchSchema = z.object({
+	matchId: z.string().uuid()
+});
+
+export const actions = {
+	delete: async (event) => {
+		await requireUser(event);
+
+		const { matchId } = DeleteMatchSchema.parse(await event.request.json());
+
+		const { getActiveAccount } = await getSession(event);
+
+		const activeAccount = getActiveAccount();
+		if (!activeAccount) return fail(401, { message: 'Unauthorized' });
+
+		await db
+			.delete(matchesTable)
+			.where(and(eq(matchesTable.id, matchId), eq(matchesTable.accountId, activeAccount.id)))
+			.run();
+
+		// MESSAGE: Match deleted successfully
+	}
+} satisfies Actions;

@@ -1,14 +1,14 @@
 <script lang="ts">
-	import { Plus } from 'lucide-svelte';
+	import { Plus, MoreVertical } from 'lucide-svelte';
 
 	import Img from '@zerodevx/svelte-img';
-	import { Paginator } from '@skeletonlabs/skeleton';
+	import { Paginator, modalStore } from '@skeletonlabs/skeleton';
 	import type { PaginatorProps } from '@skeletonlabs/skeleton/dist/components/Paginator/Paginator.svelte';
 
 	import { formatDistanceToNowStrict } from 'date-fns';
 
 	import { page } from '$app/stores';
-	import { goto } from '$app/navigation';
+	import { goto, invalidateAll } from '$app/navigation';
 
 	import { matchResult, skillTier } from '$lib/prettify';
 	import { maps } from '$lib/data/maps';
@@ -36,6 +36,23 @@
 		}
 		goto(`${$page.url.pathname}?${searchParams}`, { invalidateAll: true });
 	}
+
+	function showDeleteConfirm(matchId: string) {
+		modalStore.trigger({
+			type: 'confirm',
+
+			title: 'Delete Match',
+			body: 'Are you sure you want to delete this match?',
+
+			response: async (confirmed: boolean) => {
+				if (!confirmed) return;
+
+				await fetch('?/delete', { method: 'POST', body: JSON.stringify({ matchId }) });
+
+				await invalidateAll();
+			}
+		});
+	}
 </script>
 
 <svelte:head>
@@ -62,11 +79,11 @@
 		{@const map = maps[match.map]}
 		{@const modality = seasons[match.season].modalities[match.modality]}
 		<div
-			class="mb-4 grid h-20 w-full grid-cols-[2fr_1fr_0.7fr_1fr_1fr_1fr_auto] gap-5 overflow-hidden rounded-lg bg-surface-100 uppercase dark:bg-surface-700"
+			class="relative mb-4 grid h-20 w-full grid-cols-[2fr_1fr_0.7fr_1fr_1fr_1fr_auto] gap-5 overflow-hidden rounded-lg bg-surface-100 dark:bg-surface-700"
 		>
 			<!-- Map -->
 			<div
-				class={cn('relative h-full overflow-hidden border-l-4', {
+				class={cn('relative h-full overflow-hidden border-l-4 uppercase', {
 					'border-success-500': match.result === 'win',
 					'border-warning-500': match.result === 'draw',
 					'border-error-500': match.result === 'lose'
@@ -109,28 +126,33 @@
 			</div>
 
 			<!-- Match Result -->
-			<div
-				class="group relative flex flex-row items-center justify-center overflow-hidden text-center"
-			>
+			<div class="flex flex-row items-center justify-center text-center">
 				<div
-					class={cn(
-						'absolute z-10 w-full cursor-pointer rounded-lg px-4 py-2 transition-transform group-hover:translate-x-[-95%]',
-						{
-							'variant-filled-success': match.result === 'win',
-							'variant-filled-warning': match.result === 'draw',
-							'variant-filled-error': match.result === 'lose'
-						}
-					)}
+					class={cn('w-full rounded-lg px-4 py-2', {
+						'variant-filled-success': match.result === 'win',
+						'variant-filled-warning': match.result === 'draw',
+						'variant-filled-error': match.result === 'lose'
+					})}
 				>
 					{matchResult[match.result]}
 				</div>
-				<a
-					href={match.rankUpdate ? '' : `/rank-updates/new?matchId=${match.id}`}
-					class={cn(
-						'absolute flex w-full translate-x-[100%] items-center justify-center gap-2 whitespace-nowrap rounded-lg px-4 py-2 transition-transform',
-						'group-hover:translate-x-0',
-						{
-							'variant-soft-secondary': !match.rankUpdate,
+			</div>
+
+			<!-- Actions -->
+			<div class="w-4" />
+			<div
+				class="
+					group absolute right-0 z-10 flex h-full
+					w-auto translate-x-[calc(100%-24px)] items-center rounded-l-lg bg-surface-200
+					shadow-2xl transition-transform hover:translate-x-0 dark:bg-surface-600
+				"
+			>
+				<MoreVertical />
+				<div class="flex gap-2 px-5">
+					<a
+						href={match.rankUpdate ? '' : `/rank-updates/new?matchId=${match.id}`}
+						class={cn('btn whitespace-nowrap', {
+							'variant-filled-secondary': !match.rankUpdate,
 							'variant-filled-bronze': match.rankUpdate?.tier === 'bronze',
 							'variant-filled-silver': match.rankUpdate?.tier === 'silver',
 							'variant-filled-gold': match.rankUpdate?.tier === 'gold',
@@ -139,15 +161,22 @@
 							'variant-filled-master': match.rankUpdate?.tier === 'master',
 							'variant-filled-grandmaster': match.rankUpdate?.tier === 'grandmaster',
 							'variant-filled-top500': match.rankUpdate?.tier === 'top500'
-						}
-					)}
-				>
-					{#if match.rankUpdate}
-						{`${skillTier[match.rankUpdate.tier]} ${match.rankUpdate.division}`}
-					{:else}
-						<Plus size={20} />New rank
-					{/if}
-				</a>
+						})}
+					>
+						{#if match.rankUpdate}
+							{`${skillTier[match.rankUpdate.tier]} ${match.rankUpdate.division}`}
+						{:else}
+							<span><Plus size={20} /></span>
+							<span>New rank</span>
+						{/if}
+					</a>
+					<button
+						class="btn variant-filled-error"
+						on:click={() => showDeleteConfirm(match.id)}
+					>
+						Delete
+					</button>
+				</div>
 			</div>
 		</div>
 	{/each}
