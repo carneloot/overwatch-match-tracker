@@ -60,7 +60,7 @@ export const accountsTable = sqliteTable(
 		userId: text('user_id')
 			.references(() => usersTable.id)
 			.notNull(),
-		battleTag: text('battle_tag'),
+		battleTag: text('battle_tag').notNull(),
 		selected: integer('selected', { mode: 'boolean' }).default(false)
 	},
 	(self) => ({

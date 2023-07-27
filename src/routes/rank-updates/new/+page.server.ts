@@ -38,7 +38,7 @@ const getMatch = async (matchId: string) => {
 export const load = (async (event) => {
 	await requireUser(event);
 
-	const { getActiveAccountId } = await getSession(event);
+	const { getActiveAccount } = await getSession(event);
 
 	const matchId = event.url.searchParams.get('matchId');
 	const match = matchId ? await getMatch(matchId) : undefined;
@@ -49,7 +49,7 @@ export const load = (async (event) => {
 		: undefined;
 
 	const initialValues = {
-		accountId: getActiveAccountId(),
+		accountId: getActiveAccount()?.id,
 		matchId: matchId ?? undefined,
 		time: match?.time ?? new Date(),
 		modality: match?.modality ?? undefined,

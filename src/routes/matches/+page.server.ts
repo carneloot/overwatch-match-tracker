@@ -75,11 +75,11 @@ async function countMatches({ accountId, season }: CountMatchesForDisplay) {
 export const load = (async (event) => {
 	await requireUser(event);
 
-	const { getActiveAccountId } = await getSession(event);
+	const { getActiveAccount } = await getSession(event);
 
-	const activeAccountId = getActiveAccountId();
+	const activeAccount = getActiveAccount();
 
-	if (!activeAccountId) {
+	if (!activeAccount) {
 		throw redirect(303, '/accounts'); // Add message to select an account
 	}
 
@@ -88,13 +88,13 @@ export const load = (async (event) => {
 
 	return {
 		matches: getMatches({
-			accountId: activeAccountId,
+			accountId: activeAccount.id,
 			season: currentSeason.slug,
 			limit,
 			skip
 		}),
 		total: countMatches({
-			accountId: activeAccountId,
+			accountId: activeAccount.id,
 			season: currentSeason.slug
 		})
 	};

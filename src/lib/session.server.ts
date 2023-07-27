@@ -16,8 +16,8 @@ import { upsertUser } from '$lib/user';
 const sessionIdKey = '__session_id__' as const;
 
 type SessionData = {
-	[sessionIdKey]: string | undefined;
-	activeAccountId: string | undefined;
+	[sessionIdKey]?: string;
+	activeAccount?: { id: string; battleTag: string };
 };
 
 const sessionStorage = createCookieSessionStorage<SessionData>({
@@ -76,7 +76,8 @@ async function deleteSession(sessionId: string) {
 async function getDefaultActiveAccount(id: string) {
 	return db
 		.select({
-			id: accountsTable.id
+			id: accountsTable.id,
+			battleTag: accountsTable.battleTag
 		})
 		.from(accountsTable)
 		.where(and(eq(accountsTable.selected, true), eq(accountsTable.userId, id)))
@@ -117,7 +118,7 @@ async function getSession(event: RequestEvent) {
 			session.set(sessionIdKey, userSession.id);
 
 			const activeAccount = await getDefaultActiveAccount(user.id);
-			session.set('activeAccountId', activeAccount?.id ?? undefined);
+			session.set('activeAccount', activeAccount);
 		},
 
 		signOut: async () => {
@@ -128,11 +129,11 @@ async function getSession(event: RequestEvent) {
 			await deleteSession(sessionId);
 		},
 
-		getActiveAccountId: () => {
-			return session.get('activeAccountId');
+		getActiveAccount: () => {
+			return session.get('activeAccount');
 		},
-		setActiveAccountId: (newId: string) => {
-			session.set('activeAccountId', newId);
+		setActiveAccount: (activeAccount: SessionData['activeAccount']) => {
+			session.set('activeAccount', activeAccount);
 		},
 
 		sendCookie: async (event: RequestEvent) => {

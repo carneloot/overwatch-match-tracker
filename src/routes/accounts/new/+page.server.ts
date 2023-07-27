@@ -59,8 +59,8 @@ export const actions = {
 		});
 
 		if (form.data.selected) {
-			const { setActiveAccountId, sendCookie } = await getSession(event);
-			setActiveAccountId(newAccountId);
+			const { setActiveAccount, sendCookie } = await getSession(event);
+			setActiveAccount({ id: newAccountId, battleTag: form.data.battleTag });
 			await sendCookie(event);
 		}
 

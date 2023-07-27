@@ -89,13 +89,13 @@ function getAccountsByUser(userId: string) {
 export const load = (async (event) => {
 	const user = await requireUser(event);
 
-	const { getActiveAccountId } = await getSession(event);
+	const { getActiveAccount } = await getSession(event);
 
 	const storedData = await getNewMatchValues(event);
 
 	const initialValues = {
 		time: new Date(),
-		accountId: getActiveAccountId(),
+		accountId: getActiveAccount()?.id,
 		result: 'win',
 		...storedData
 	} satisfies Partial<NewMatch>;

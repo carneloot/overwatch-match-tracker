@@ -71,16 +71,17 @@ async function getAccountsByUser(userId: string) {
 export const load = (async (event) => {
 	const user = await requireUser(event);
 
-	const { getActiveAccountId } = await getSession(event);
+	const { getActiveAccount } = await getSession(event);
 
 	return {
 		accounts: getAccountsByUser(user.id),
-		selectedAccountId: getActiveAccountId()
+		selectedAccountId: getActiveAccount()?.id
 	};
 }) satisfies PageServerLoad;
 
 const actionSchema = z.object({
-	accountId: z.string().uuid()
+	id: z.string().uuid(),
+	battleTag: z.string()
 });
 
 async function deleteAccount(accountId: string) {
@@ -99,7 +100,7 @@ export const actions = {
 
 		const { data } = parseResult;
 
-		await deleteAccount(data.accountId);
+		await deleteAccount(data.id);
 	},
 	select: async (event) => {
 		await requireUser(event);
@@ -112,9 +113,9 @@ export const actions = {
 
 		const { data } = parseResult;
 
-		const { setActiveAccountId, sendCookie } = await getSession(event);
+		const { setActiveAccount, sendCookie } = await getSession(event);
 
-		setActiveAccountId(data.accountId);
+		setActiveAccount(data);
 
 		await sendCookie(event);
 	}

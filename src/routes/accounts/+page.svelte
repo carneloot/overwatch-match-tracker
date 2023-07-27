@@ -7,7 +7,7 @@
 	export let data;
 
 	const noAccounts = !data.accounts.length;
-	const missingSelected = !data.selectedAccountId;
+	$: missingSelected = !data.selectedAccountId;
 </script>
 
 <svelte:head>
@@ -63,7 +63,8 @@
 			</div>
 
 			<form method="post" use:enhance class="card-footer flex w-full justify-end gap-2">
-				<input type="hidden" name="accountId" value={account.id} />
+				<input type="hidden" name="id" value={account.id} />
+				<input type="hidden" name="battleTag" value={account.battleTag} />
 				<button type="submit" formaction="?/delete" class="btn btn-sm variant-soft-error">
 					Delete
 				</button>
