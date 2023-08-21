@@ -1,3 +1,5 @@
+import { addDays } from 'date-fns';
+
 export type OverwatchSeasonSlug = string;
 
 export type OverwatchSeason = {
@@ -6,7 +8,7 @@ export type OverwatchSeason = {
 	modalities: Record<string, string>;
 	startTime: Date;
 	endTime: Date;
-}
+};
 
 export const seasons = {
 	'season-5': {
@@ -20,7 +22,18 @@ export const seasons = {
 		},
 		startTime: new Date('2023-06-13T18:00:00.000Z'),
 		endTime: new Date('2023-08-10T18:00:00.000Z')
+	},
+	'season-6': {
+		name: 'Season 6',
+		slug: 'season-6',
+		modalities: {
+			'role-queue': 'Role Queue',
+			'open-queue': 'Open Queue',
+			mystery: 'Mystery Heroes'
+		},
+		startTime: new Date('2023-08-10T18:00:00.000Z'),
+		endTime: addDays(new Date('2023-08-10T18:00:00.000Z'), 63)
 	}
 } as Record<OverwatchSeasonSlug, OverwatchSeason>;
 
-export const currentSeason = seasons['season-5'];
+export const currentSeason = seasons['season-6'];

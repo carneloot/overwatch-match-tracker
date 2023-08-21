@@ -19,6 +19,7 @@ export const mapType = {
 	control: 'Control',
 	deathmatch: 'Deathmatch',
 	escort: 'Escort',
+	flashpoint: 'Flashpoint',
 	push: 'Push'
 } satisfies Record<MapType, string>;
 
