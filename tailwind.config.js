@@ -1,6 +1,6 @@
 import { join } from 'path';
 
-import skeleton from '@skeletonlabs/skeleton/tailwind/skeleton.cjs';
+import { skeleton } from '@skeletonlabs/tw-plugin';
 import ranked from './src/lib/tailwind/ranked.cjs';
 
 /** @type {import('tailwindcss').Config} */
@@ -10,12 +10,6 @@ export default {
 		'./src/**/*.{html,js,svelte,ts}',
 		join(require.resolve('@skeletonlabs/skeleton'), '../**/*.{html,js,svelte,ts}')
 	],
-	theme: {
-
-	},
-	plugins: [
-		require('@tailwindcss/forms'),
-		ranked,
-		...skeleton(),
-	]
+	theme: {},
+	plugins: [skeleton({ themes: { preset: ['skeleton'] } }), require('@tailwindcss/forms'), ranked]
 };

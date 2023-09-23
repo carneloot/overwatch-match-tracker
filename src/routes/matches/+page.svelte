@@ -2,7 +2,7 @@
 	import { Plus, MoreVertical } from 'lucide-svelte';
 
 	import Img from '@zerodevx/svelte-img';
-	import { Paginator, modalStore } from '@skeletonlabs/skeleton';
+	import { Paginator, getModalStore } from '@skeletonlabs/skeleton';
 	import type { PaginatorProps } from '@skeletonlabs/skeleton/dist/components/Paginator/Paginator.svelte';
 
 	import { formatDistanceToNowStrict } from 'date-fns';
@@ -18,21 +18,22 @@
 
 	export let data;
 
+	const modalStore = getModalStore();
+
 	let paginatorSettings = {
 		size: data.total,
 		limit: Number($page.url.searchParams.get('limit') ?? 10),
-		offset: Number($page.url.searchParams.get('skip') ?? 0),
+		page: Number($page.url.searchParams.get('page') ?? 1),
 		amounts: []
 	} satisfies PaginatorProps['settings'];
 
 	function onPageChange(e: CustomEvent): void {
 		const newPage = e.detail as number;
 		const searchParams = $page.url.searchParams;
-		const skip = newPage * paginatorSettings.limit;
-		if (skip > 0) {
-			searchParams.set('skip', skip.toString());
+		if (newPage > 1) {
+			searchParams.set('page', newPage.toString());
 		} else {
-			searchParams.delete('skip');
+			searchParams.delete('page');
 		}
 		goto(`${$page.url.pathname}?${searchParams}`, { invalidateAll: true });
 	}
@@ -61,7 +62,7 @@
 
 <div class="mb-6 flex justify-between">
 	<h2 class="h2">Matches</h2>
-	<a href="/matches/new" class="btn variant-filled-primary text-white">
+	<a href="/matches/new" class="variant-filled-primary btn text-white">
 		<span><Plus size={20} /></span>
 		<span>New Match</span>
 	</a>
@@ -171,7 +172,7 @@
 						{/if}
 					</a>
 					<button
-						class="btn variant-filled-error"
+						class="variant-filled-error btn"
 						on:click={() => showDeleteConfirm(match.id)}
 					>
 						Delete

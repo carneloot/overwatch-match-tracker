@@ -33,7 +33,7 @@ const sessionStorage = createCookieSessionStorage<SessionData>({
 });
 
 async function getUserFromSessionId(sessionId: string) {
-	const { session, user } = await db
+	const result = await db
 		.select({
 			user: usersTable,
 			session: {
@@ -45,9 +45,11 @@ async function getUserFromSessionId(sessionId: string) {
 		.where(eq(sessionsTable.id, sessionId))
 		.get();
 
-	if (!session) {
+	if (!result) {
 		throw new Error('No session found');
 	}
+
+	const { session, user } = result;
 
 	if (Date.now() > session.expires.getTime()) {
 		await db.delete(sessionsTable).where(eq(sessionsTable.id, sessionId)).run();

@@ -1,15 +1,18 @@
 <script lang="ts">
-	import '@skeletonlabs/skeleton/themes/theme-skeleton.css';
-
-	import '@skeletonlabs/skeleton/styles/skeleton.css';
-
 	import '../app.css';
 
 	import Header from '$lib/components/Header.svelte';
 	import Footer from '$lib/components/Footer.svelte';
 
-	import { Modal } from '@skeletonlabs/skeleton';
+	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
 
+	import { Modal, storePopup } from '@skeletonlabs/skeleton';
+
+	import { initializeStores } from '@skeletonlabs/skeleton';
+
+	initializeStores();
+
+	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 </script>
 
 <Modal />

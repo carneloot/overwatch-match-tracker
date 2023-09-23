@@ -85,7 +85,8 @@ export const load = (async (event) => {
 	}
 
 	const limit = Number(event.url.searchParams.get('limit') ?? 10);
-	const skip = Number(event.url.searchParams.get('skip') ?? 0);
+	const page = Number(event.url.searchParams.get('page') ?? 1);
+	const skip = (page - 1) * limit;
 
 	return {
 		matches: getMatches({
