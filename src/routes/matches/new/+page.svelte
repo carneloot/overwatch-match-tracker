@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { RadioGroup, RadioItem, SlideToggle } from '@skeletonlabs/skeleton';
+	import { Clock9 } from 'lucide-svelte';
 
 	import { superForm } from 'sveltekit-superforms/client';
 
@@ -103,7 +104,23 @@
 		<!-- svelte-ignore a11y-label-has-associated-control -->
 		<label class="label">
 			<span>Time</span>
-			<DateTimeInput name="time" bind:value={$form.time} {...$constraints.time} />
+			<div
+				class="input-group input-group-divider !mt-2 grid-cols-[1fr_auto] !rounded-container-token"
+			>
+				<DateTimeInput
+					className="!mt-0"
+					name="time"
+					bind:value={$form.time}
+					{...$constraints.time}
+				/>
+				<button
+					type="button"
+					title="Use current time"
+					on:click={() => ($form.time = new Date())}
+				>
+					<Clock9 size={20} />
+				</button>
+			</div>
 		</label>
 
 		<!-- svelte-ignore a11y-label-has-associated-control -->
@@ -175,7 +192,7 @@
 
 	<div class="flex flex-row justify-end">
 		<input type="hidden" name="accountId" bind:value={$form.accountId} />
-		<button type="submit" class="btn variant-filled-primary">Create</button>
+		<button type="submit" class="variant-filled-primary btn">Create</button>
 	</div>
 </form>
 
