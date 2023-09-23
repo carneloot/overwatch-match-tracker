@@ -5,7 +5,7 @@
 	import { Paginator, getModalStore } from '@skeletonlabs/skeleton';
 	import type { PaginatorProps } from '@skeletonlabs/skeleton/dist/components/Paginator/Paginator.svelte';
 
-	import { formatDistanceToNowStrict } from 'date-fns';
+	import { formatDistanceToNowStrict, intlFormat } from 'date-fns';
 
 	import { page } from '$app/stores';
 	import { goto, invalidateAll } from '$app/navigation';
@@ -109,7 +109,9 @@
 
 			<!-- Time -->
 			<div class="flex flex-col items-end justify-center text-right">
-				{formatDistanceToNowStrict(match.time, { addSuffix: true })}
+				<span title={match.time.toLocaleString()}>
+					{formatDistanceToNowStrict(match.time, { addSuffix: true })}
+				</span>
 			</div>
 
 			<!-- Heroes -->
