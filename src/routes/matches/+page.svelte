@@ -23,14 +23,14 @@
 	let paginatorSettings = {
 		size: data.total,
 		limit: Number($page.url.searchParams.get('limit') ?? 10),
-		page: Number($page.url.searchParams.get('page') ?? 1),
+		page: Number($page.url.searchParams.get('page') ?? 0),
 		amounts: []
 	} satisfies PaginatorProps['settings'];
 
 	function onPageChange(e: CustomEvent): void {
 		const newPage = e.detail as number;
 		const searchParams = $page.url.searchParams;
-		if (newPage > 1) {
+		if (newPage > 0) {
 			searchParams.set('page', newPage.toString());
 		} else {
 			searchParams.delete('page');
