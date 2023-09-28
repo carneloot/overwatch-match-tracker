@@ -5,7 +5,6 @@
 
 	import SkillTierPicker from '$lib/components/SkillTierPicker.svelte';
 	import SkillDivisionPicker from '$lib/components/SkillDivisionPicker.svelte';
-	import DateTimeInput from '$lib/components/DateTimeInput.svelte';
 
 	import { heroRole, seasonalUpdate } from '$lib/prettify';
 	import { currentSeason } from '$lib/data/seasons';
@@ -14,10 +13,13 @@
 
 	const { form, errors, constraints } = superForm(data.form);
 
-	$: hasPercentage = !(
-		$form.tier === 'top500' ||
-		($form.tier === 'grandmaster' && $form.division === 1)
-	);
+	$: hasPercentage =
+		$form.matchId &&
+		!($form.tier === 'top500' || ($form.tier === 'grandmaster' && $form.division === 1));
+
+	$: if ($form.modality !== 'role-queue') {
+		$form.role = undefined;
+	}
 </script>
 
 <svelte:head>
@@ -33,7 +35,7 @@
 				<span>Modality</span>
 				<select
 					name="modality"
-					class="select"
+					class="select !mt-2"
 					aria-invalid={$errors.modality ? true : undefined}
 					bind:value={$form.modality}
 					{...$constraints.modality}
@@ -65,12 +67,6 @@
 				</RadioGroup>
 			</label>
 
-			<!-- svelte-ignore a11y-label-has-associated-control -->
-			<label class="label">
-				<span>Time</span>
-				<DateTimeInput name="time" bind:value={$form.time} {...$constraints.time} />
-			</label>
-
 			{#if $form.modality === 'role-queue'}
 				<!-- svelte-ignore a11y-label-has-associated-control -->
 				<label class="label">
@@ -80,14 +76,14 @@
 						class="w-full"
 						display="inline-grid grid-cols-3"
 					>
+						<RadioItem bind:group={$form.role} name="role" value="tank">
+							{heroRole['tank']}
+						</RadioItem>
 						<RadioItem bind:group={$form.role} name="role" value="damage">
 							{heroRole['damage']}
 						</RadioItem>
 						<RadioItem bind:group={$form.role} name="role" value="support">
 							{heroRole['support']}
-						</RadioItem>
-						<RadioItem bind:group={$form.role} name="role" value="tank">
-							{heroRole['tank']}
 						</RadioItem>
 					</RadioGroup>
 				</label>
@@ -114,7 +110,9 @@
 		{#if hasPercentage}
 			<label class="label">
 				<span>Percentage</span>
-				<div class="input-group input-group-divider grid-cols-[1fr_auto]">
+				<div
+					class="input-group input-group-divider grid-cols-[1fr_auto] !rounded-container-token"
+				>
 					<input
 						type="number"
 						name="percentage"
@@ -135,6 +133,13 @@
 			<input type="hidden" name="time" value={$form.time.toISOString()} />
 			<input type="hidden" name="modality" bind:value={$form.modality} />
 			<input type="hidden" name="role" bind:value={$form.role} />
+		{:else}
+			<!-- stop if propagation -->
+			{#if $form.seasonalUpdate === 'start'}
+				<input type="hidden" name="time" value={currentSeason.startTime.toISOString()} />
+			{:else}
+				<input type="hidden" name="time" value={currentSeason.endTime.toISOString()} />
+			{/if}
 		{/if}
 		<button type="submit" class="variant-filled-primary btn">Create</button>
 	</div>

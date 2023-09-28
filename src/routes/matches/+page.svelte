@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { Plus, MoreVertical } from 'lucide-svelte';
+	import { Plus, MoreVertical, Download } from 'lucide-svelte';
 
 	import Img from '@zerodevx/svelte-img';
-	import { Paginator, getModalStore } from '@skeletonlabs/skeleton';
+	import { Paginator, getModalStore, popup, type PopupSettings } from '@skeletonlabs/skeleton';
 	import type { PaginatorProps } from '@skeletonlabs/skeleton/dist/components/Paginator/Paginator.svelte';
 
 	import { formatDistanceToNowStrict } from 'date-fns';
@@ -27,6 +27,12 @@
 		page: Number($page.url.searchParams.get('page') ?? 0),
 		amounts: []
 	} satisfies PaginatorProps['settings'];
+
+	const optionsPopupClick = {
+		event: 'click',
+		target: 'menuPopup',
+		placement: 'bottom-end'
+	} satisfies PopupSettings;
 
 	function onPageChange(e: CustomEvent): void {
 		const newPage = e.detail as number;
@@ -63,10 +69,17 @@
 
 <div class="mb-6 flex justify-between">
 	<h2 class="h2">Matches</h2>
-	<a href="/matches/new" class="variant-filled-primary btn text-white">
-		<span><Plus size={20} /></span>
-		<span>New Match</span>
-	</a>
+
+	<div class="flex gap-2">
+		<a href="/matches/new" class="variant-filled-primary btn">
+			<span><Plus size={20} /></span>
+			<span>New Match</span>
+		</a>
+
+		<button class="bg-initial btn-icon" use:popup={optionsPopupClick}>
+			<MoreVertical size={20} />
+		</button>
+	</div>
 </div>
 
 <div class="mb-6">
@@ -204,3 +217,15 @@
 		justify="justify-center"
 	/>
 {/if}
+
+<div
+	class="list-nav z-10 flex hidden flex-col gap-2 rounded bg-surface-200 p-2 shadow dark:bg-surface-600"
+	data-popup="menuPopup"
+>
+	<a href="/rank-updates/new">
+		<span><Plus size={20} /></span>
+		<span>Add rank update manually</span>
+	</a>
+
+	<div class="arrow bg-surface-200 dark:bg-surface-600" />
+</div>

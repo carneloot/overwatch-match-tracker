@@ -53,6 +53,7 @@ export const load = (async (event) => {
 		matchId: matchId ?? undefined,
 		time: match?.time ?? new Date(),
 		modality: match?.modality ?? undefined,
+		seasonalUpdate: 'start',
 		division: 3,
 		percentage: 50,
 		role
