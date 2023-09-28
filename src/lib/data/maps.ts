@@ -28,6 +28,7 @@ import paraiso from '$lib/assets/images/maps/paraiso.webp?as=run';
 import petra from '$lib/assets/images/maps/petra.webp?as=run';
 import rialto from '$lib/assets/images/maps/rialto.webp?as=run';
 import route66 from '$lib/assets/images/maps/route-66.webp?as=run';
+import samoa from '$lib/assets/images/maps/samoa.webp?as=run';
 import shambaliMonastery from '$lib/assets/images/maps/shambali-monastery.webp?as=run';
 import suravasa from '$lib/assets/images/maps/suravasa.webp?as=run';
 import watchpointGibraltar from '$lib/assets/images/maps/watchpoint-gibraltar.webp?as=run';
@@ -203,6 +204,12 @@ export const maps = {
 		name: 'Route 66',
 		type: 'escort',
 		image: route66
+	},
+	samoa: {
+		slug: 'samoa',
+		name: 'Samoa',
+		type: 'control',
+		image: samoa
 	},
 	'shambali-monastery': {
 		slug: 'shambali-monastery',

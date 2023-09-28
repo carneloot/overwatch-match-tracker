@@ -1,4 +1,4 @@
-import { addDays } from 'date-fns';
+import { addWeeks } from 'date-fns';
 
 export type OverwatchSeasonSlug = string;
 
@@ -32,7 +32,17 @@ export const seasons = {
 			mystery: 'Mystery Heroes'
 		},
 		startTime: new Date('2023-08-10T18:00:00.000Z'),
-		endTime: addDays(new Date('2023-08-10T18:00:00.000Z'), 63)
+		endTime: new Date('2023-10-10T18:00:00.000Z')
+	},
+	'season-7': {
+		name: 'Season 7',
+		slug: 'season-7',
+		modalities: {
+			'role-queue': 'Role Queue',
+			'open-queue': 'Open Queue'
+		},
+		startTime: new Date('2023-10-10T18:00:00.000Z'),
+		endTime: addWeeks(new Date('2023-10-10T18:00:00.000Z'), 9)
 	}
 } as Record<OverwatchSeasonSlug, OverwatchSeason>;
 
