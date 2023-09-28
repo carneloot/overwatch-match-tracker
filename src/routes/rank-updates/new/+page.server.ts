@@ -96,7 +96,7 @@ const newRankUpdateSchema = z
 
 			const isGM1 = tier === 'grandmaster' && division === 1;
 
-			if (!percentage && !isGM1) {
+			if (matchId && !percentage && !isGM1) {
 				ctx.addIssue({
 					code: 'custom',
 					message: 'Percentage is required',
@@ -125,6 +125,7 @@ export const actions = {
 		const form = await superValidate(event, newRankUpdateSchema);
 
 		if (!form.valid) {
+			console.log(form.errors);
 			return fail(400, { form });
 		}
 
