@@ -1,5 +1,5 @@
 import { index, integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
-import type { InferModel } from 'drizzle-orm';
+import type { InferSelectModel } from 'drizzle-orm';
 import { z } from 'zod';
 
 import type { HeroRole, OverwatchHeroSlug } from '$lib/data/heroes';
@@ -37,7 +37,7 @@ export const usersTable = sqliteTable(
 	})
 );
 
-export type User = InferModel<typeof usersTable, 'select'>;
+export type User = InferSelectModel<typeof usersTable>;
 
 export const sessionsTable = sqliteTable(
 	'sessions',
@@ -91,7 +91,7 @@ export const rankUpdatesTable = sqliteTable(
 	})
 );
 
-export type RankUpdate = InferModel<typeof rankUpdatesTable, 'select'>;
+export type RankUpdate = InferSelectModel<typeof rankUpdatesTable>;
 
 export const matchesTable = sqliteTable(
 	'matches',

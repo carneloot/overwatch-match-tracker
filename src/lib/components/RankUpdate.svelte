@@ -4,7 +4,12 @@
 	import { seasons } from '$lib/data/seasons';
 	import { cn } from '$lib/utils';
 
-	export let rankUpdate: RankUpdate;
+	export let rankUpdate: Pick<
+		RankUpdate,
+		'tier' | 'role' | 'season' | 'modality' | 'division' | 'percentage'
+	>;
+
+	export let horizontal = false;
 
 	export let showRole = false;
 	export let showPercentage = false;
@@ -21,7 +26,12 @@
 	});
 </script>
 
-<div class="flex flex-row items-center gap-3 whitespace-nowrap">
+<div
+	class={cn('flex  whitespace-nowrap', {
+		'flex-col gap-1': !horizontal,
+		'flex-row items-center gap-3': horizontal
+	})}
+>
 	{#if showRole}
 		{#if rankUpdate.role}
 			{heroRole[rankUpdate.role] + ':'}

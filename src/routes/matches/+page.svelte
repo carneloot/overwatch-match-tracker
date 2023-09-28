@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Plus, MoreVertical, Download } from 'lucide-svelte';
+	import { Plus, MoreVertical } from 'lucide-svelte';
 
 	import Img from '@zerodevx/svelte-img';
 	import { Paginator, getModalStore, popup, type PopupSettings } from '@skeletonlabs/skeleton';
@@ -97,7 +97,7 @@
 		{#if match.rankUpdate}
 			<div class="flex w-full flex-row items-center gap-4 pb-4">
 				<hr class="w-full !border-t-2" />
-				<RankUpdate showRole rankUpdate={match.rankUpdate} />
+				<RankUpdate showRole horizontal rankUpdate={match.rankUpdate} />
 				<hr class="w-full !border-t-2" />
 			</div>
 		{/if}

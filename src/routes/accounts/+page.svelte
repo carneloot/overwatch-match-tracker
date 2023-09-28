@@ -16,7 +16,7 @@
 
 <div class="mb-6 flex justify-between">
 	<h2 class="h2">Accounts</h2>
-	<a href="/accounts/new" class="btn variant-filled-primary text-white">
+	<a href="/accounts/new" class="variant-filled-primary btn text-white">
 		<span><Plus size={20} /></span>
 		<span>New Account</span>
 	</a>
@@ -43,7 +43,7 @@
 			<header class="card-header flex gap-2">
 				<span>{account.battleTag}</span>
 				{#if account.id === data.selectedAccountId}
-					<span class="badge variant-filled-success">Selected</span>
+					<span class="variant-filled-success badge">Selected</span>
 				{/if}
 			</header>
 
@@ -65,14 +65,14 @@
 			<form method="post" use:enhance class="card-footer flex w-full justify-end gap-2">
 				<input type="hidden" name="id" value={account.id} />
 				<input type="hidden" name="battleTag" value={account.battleTag} />
-				<button type="submit" formaction="?/delete" class="btn btn-sm variant-soft-error">
+				<button type="submit" formaction="?/delete" class="variant-soft-error btn btn-sm">
 					Delete
 				</button>
 
 				<button
 					type="submit"
 					formaction="?/select"
-					class="btn btn-sm variant-soft-secondary"
+					class="variant-soft-secondary btn btn-sm"
 				>
 					Select
 				</button>

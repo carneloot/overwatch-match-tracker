@@ -1,7 +1,7 @@
 import { fail, redirect } from '@sveltejs/kit';
 
 import { superValidate } from 'sveltekit-superforms/server';
-import { and, eq, type InferModel } from 'drizzle-orm';
+import { and, eq, type InferInsertModel } from 'drizzle-orm';
 import { v4 as uuid } from 'uuid';
 import { z } from 'zod';
 
@@ -15,7 +15,7 @@ const newAccountSchema = z.object({
 	battleTag: z.string(),
 	selected: z.boolean().nullable().default(false)
 });
-type NewAccount = InferModel<typeof accountsTable, 'insert'>;
+type NewAccount = InferInsertModel<typeof accountsTable>;
 
 export const load = (async (event) => {
 	await requireUser(event);
