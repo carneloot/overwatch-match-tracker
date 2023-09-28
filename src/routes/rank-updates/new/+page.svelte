@@ -107,6 +107,7 @@
 				name="division"
 				bind:value={$form.division}
 				isTop500={$form.tier === 'top500'}
+				skillTier={$form.tier}
 			/>
 		</label>
 
@@ -135,7 +136,7 @@
 			<input type="hidden" name="modality" bind:value={$form.modality} />
 			<input type="hidden" name="role" bind:value={$form.role} />
 		{/if}
-		<button type="submit" class="btn variant-filled-primary">Create</button>
+		<button type="submit" class="variant-filled-primary btn">Create</button>
 	</div>
 </form>
 

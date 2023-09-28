@@ -82,7 +82,7 @@
 		{@const modality = seasons[match.season].modalities[match.modality]}
 
 		{#if match.rankUpdate}
-			<div class="flex w-full flex-row items-center gap-4 py-4">
+			<div class="flex w-full flex-row items-center gap-4 pb-4">
 				<hr class="w-full !border-t-2" />
 				<RankUpdate showRole rankUpdate={match.rankUpdate} />
 				<hr class="w-full !border-t-2" />

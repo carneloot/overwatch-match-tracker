@@ -184,6 +184,7 @@
 						name="averageDivision"
 						bind:value={$form.averageDivision}
 						isTop500={$form.averageTier === 'top500'}
+						skillTier={$form.averageTier}
 					/>
 				</label>
 			</div>
