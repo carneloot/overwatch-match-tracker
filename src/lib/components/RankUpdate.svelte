@@ -21,7 +21,7 @@
 	});
 </script>
 
-<div class="flex flex-col gap-1 whitespace-nowrap">
+<div class="flex flex-row items-center gap-3 whitespace-nowrap">
 	{#if showRole}
 		{#if rankUpdate.role}
 			{heroRole[rankUpdate.role] + ':'}

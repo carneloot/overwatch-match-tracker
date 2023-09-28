@@ -5,7 +5,7 @@
 	import { Paginator, getModalStore } from '@skeletonlabs/skeleton';
 	import type { PaginatorProps } from '@skeletonlabs/skeleton/dist/components/Paginator/Paginator.svelte';
 
-	import { formatDistanceToNowStrict, intlFormat } from 'date-fns';
+	import { formatDistanceToNowStrict } from 'date-fns';
 
 	import { page } from '$app/stores';
 	import { goto, invalidateAll } from '$app/navigation';
@@ -15,6 +15,7 @@
 	import { seasons } from '$lib/data/seasons';
 	import { cn } from '$lib/utils';
 	import { heroes } from '$lib/data/heroes';
+	import RankUpdate from '$lib/components/RankUpdate.svelte';
 
 	export let data;
 
@@ -79,6 +80,15 @@
 	{#each data.matches as match (match.id)}
 		{@const map = maps[match.map]}
 		{@const modality = seasons[match.season].modalities[match.modality]}
+
+		{#if match.rankUpdate}
+			<div class="flex w-full flex-row items-center gap-4 py-4">
+				<hr class="w-full !border-t-2" />
+				<RankUpdate showRole rankUpdate={match.rankUpdate} />
+				<hr class="w-full !border-t-2" />
+			</div>
+		{/if}
+
 		<div
 			class="relative mb-4 grid h-20 w-full grid-cols-[2fr_1fr_0.7fr_1fr_1fr_1fr_auto] gap-5 overflow-hidden rounded-lg bg-surface-100 dark:bg-surface-700"
 		>
