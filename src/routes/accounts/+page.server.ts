@@ -1,6 +1,6 @@
 import { fail } from '@sveltejs/kit';
 
-import { desc, eq, sql } from 'drizzle-orm';
+import { eq, inArray, sql } from 'drizzle-orm';
 import { z } from 'zod';
 
 import type { Actions, PageServerLoad } from './$types';
@@ -10,22 +10,28 @@ import { accountsTable, rankUpdatesTable } from '$lib/database/schema';
 import { jsonParse } from '$lib/utils';
 import { getSession, requireUser } from '$lib/session.server';
 
-async function getRankUpdate(rankUpdateId: string) {
-	const [rankUpdate] = await db
+async function getRankUpdates(rankUpdateIds: string[]) {
+	if (!rankUpdateIds.length) {
+		return [];
+	}
+
+	return db
 		.select()
 		.from(rankUpdatesTable)
-		.where(eq(rankUpdatesTable.id, rankUpdateId))
+		.where(inArray(rankUpdatesTable.id, rankUpdateIds))
 		.all();
-
-	return rankUpdate;
 }
 
 async function getAccountsByUser(userId: string) {
 	const rankUpdates = db
-		.select({ id: rankUpdatesTable.id, accountId: rankUpdatesTable.accountId })
+		.select({
+			id: rankUpdatesTable.id,
+			accountId: rankUpdatesTable.accountId,
+			time: sql<Date>`max(${rankUpdatesTable.time})`
+		})
 		.from(rankUpdatesTable)
-		.groupBy(rankUpdatesTable.accountId, rankUpdatesTable.role, rankUpdatesTable.modality)
-		.orderBy(desc(rankUpdatesTable.time), rankUpdatesTable.role, rankUpdatesTable.modality)
+		.groupBy(rankUpdatesTable.accountId, rankUpdatesTable.modality, rankUpdatesTable.role)
+		.orderBy(rankUpdatesTable.modality, rankUpdatesTable.role)
 		.as('rankUpdates');
 
 	const accounts = await db
@@ -42,11 +48,8 @@ async function getAccountsByUser(userId: string) {
 
 	return Promise.all(
 		accounts.map(async (account) => {
-			const rankUpdates = await Promise.all(
-				jsonParse<string[]>(account.rankUpdates ?? '[]')
-					.filter(Boolean)
-					.map(getRankUpdate)
-			);
+			const rankUpdateIds = jsonParse<string[]>(account.rankUpdates ?? '[]').filter(Boolean);
+			const rankUpdates = await getRankUpdates(rankUpdateIds);
 
 			rankUpdates.sort((a, b) => {
 				if (!a.role) {
