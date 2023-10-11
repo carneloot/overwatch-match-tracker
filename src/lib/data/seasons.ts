@@ -1,4 +1,4 @@
-import { addWeeks } from 'date-fns';
+import { addDays } from 'date-fns';
 
 export type OverwatchSeasonSlug = string;
 
@@ -42,8 +42,8 @@ export const seasons = {
 			'open-queue': 'Open Queue'
 		},
 		startTime: new Date('2023-10-10T18:00:00.000Z'),
-		endTime: addWeeks(new Date('2023-10-10T18:00:00.000Z'), 9)
+		endTime: addDays(new Date('2023-10-10T18:00:00.000Z'), 56)
 	}
 } as Record<OverwatchSeasonSlug, OverwatchSeason>;
 
-export const currentSeason = seasons['season-6'];
+export const currentSeason = seasons['season-7'];
