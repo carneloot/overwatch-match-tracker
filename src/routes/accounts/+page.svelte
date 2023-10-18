@@ -50,9 +50,10 @@
 			<div class="m-2 rounded-lg bg-surface-200 p-2 dark:bg-surface-700">
 				<span class="h4 mb-2">Ranks</span>
 				{#if !account.rankUpdates.length}
-					<div class="grid grid-cols-1 place-content-end gap-1">
-						Currently there is no rank for this account!
-					</div>
+					<p class="py-2">
+						Currently there is no rank for this account on the current season. Play some
+						games and earn some ranks!
+					</p>
 				{:else}
 					<div class="grid grid-cols-2 place-content-end gap-1">
 						{#each account.rankUpdates as rankUpdate}

@@ -9,6 +9,8 @@ import { db } from '$lib/database/db';
 import { accountsTable, rankUpdatesTable } from '$lib/database/schema';
 import { jsonParse } from '$lib/utils';
 import { getSession, requireUser } from '$lib/session.server';
+import type { OverwatchSeasonSlug } from '$lib/data/seasons';
+import { currentSeason } from '$lib/data/seasons';
 
 async function getRankUpdates(rankUpdateIds: string[]) {
 	if (!rankUpdateIds.length) {
@@ -22,7 +24,12 @@ async function getRankUpdates(rankUpdateIds: string[]) {
 		.all();
 }
 
-async function getAccountsByUser(userId: string) {
+type GetAccountsByUser = {
+	userId: string;
+	season: OverwatchSeasonSlug;
+};
+
+async function getAccountsByUser({ userId, season }: GetAccountsByUser) {
 	const rankUpdates = db
 		.select({
 			id: rankUpdatesTable.id,
@@ -32,6 +39,7 @@ async function getAccountsByUser(userId: string) {
 		.from(rankUpdatesTable)
 		.groupBy(rankUpdatesTable.accountId, rankUpdatesTable.modality, rankUpdatesTable.role)
 		.orderBy(rankUpdatesTable.modality, rankUpdatesTable.role)
+		.where(eq(rankUpdatesTable.season, season))
 		.as('rankUpdates');
 
 	const accounts = await db
@@ -77,7 +85,7 @@ export const load = (async (event) => {
 	const { getActiveAccount } = await getSession(event);
 
 	return {
-		accounts: getAccountsByUser(user.id),
+		accounts: getAccountsByUser({ userId: user.id, season: currentSeason.slug }),
 		selectedAccountId: getActiveAccount()?.id
 	};
 }) satisfies PageServerLoad;
