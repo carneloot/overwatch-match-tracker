@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { superForm } from 'sveltekit-superforms/client';
 
+	import { dev } from '$app/environment';
+
 	import GoogleIcon from './GoogleIcon.svelte';
 
 	export let data;
@@ -21,32 +23,34 @@
 				<span>Continue with Google</span>
 			</button>
 		</form>
-		<hr />
-		<form method="post" class="flex flex-col justify-center gap-2">
-			<!-- Temporary before using flash messages -->
-			{#if $errors.email}
-				<div class="alert variant-soft-error">
-					{$errors.email}
-				</div>
-			{/if}
-			<label class="label">
-				<span>Email address</span>
-				<input
-					type="email"
-					name="email"
-					class="input w-full"
-					aria-invalid={$errors.email ? 'true' : 'false'}
-					placeholder="john@doe.com"
-					bind:value={$form.email}
-					{...$constraints.email}
-				/>
-			</label>
-			<label class="absolute left-[-999999999999px]">
-				<span>Password</span>
-				<input type="password" name="password" autocomplete="off" />
-			</label>
-			<button type="submit" class="btn variant-ghost">Login with email</button>
-		</form>
+		{#if dev}
+			<hr />
+			<form method="post" class="flex flex-col justify-center gap-2">
+				<!-- Temporary before using flash messages -->
+				{#if $errors.email}
+					<div class="alert variant-soft-error">
+						{$errors.email}
+					</div>
+				{/if}
+				<label class="label">
+					<span>Email address</span>
+					<input
+						type="email"
+						name="email"
+						class="input w-full"
+						aria-invalid={$errors.email ? 'true' : 'false'}
+						placeholder="john@doe.com"
+						bind:value={$form.email}
+						{...$constraints.email}
+					/>
+				</label>
+				<label class="absolute left-[-999999999999px]">
+					<span>Password</span>
+					<input type="password" name="password" autocomplete="off" />
+				</label>
+				<button type="submit" class="variant-ghost btn">Login with email</button>
+			</form>
+		{/if}
 	</div>
 </div>
 
