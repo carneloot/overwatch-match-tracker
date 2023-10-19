@@ -109,6 +109,8 @@
 					name="time"
 					bind:value={$form.time}
 					{...$constraints.time}
+					minDate={new Date(data.activeSeason.startTime)}
+					maxDate={new Date(data.activeSeason.endTime)}
 				/>
 				<button
 					type="button"
