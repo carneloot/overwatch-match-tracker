@@ -19,7 +19,6 @@ import { getNewMatchValues, setNewMatchValues } from '$lib/sessions/new-match.se
 import { getSession, requireUser } from '$lib/session.server';
 import { OverwatchHeroEnum } from '$lib/data/heroes';
 import { OverwatchMapEnum } from '$lib/data/maps';
-import { currentSeason } from '$lib/data/seasons';
 import { db } from '$lib/database/db';
 
 const newMatchSchema = z.object({
@@ -34,7 +33,8 @@ const newMatchSchema = z.object({
 	result: MatchResult,
 	averageTier: SkillTier.optional(),
 	averageDivision: z.number().int().min(1).max(500).optional(),
-	time: z.coerce.date()
+	time: z.coerce.date(),
+	season: z.string()
 });
 type NewMatch = z.infer<typeof newMatchSchema>;
 
@@ -50,7 +50,7 @@ async function createNewMatch(newMatch: NewMatch) {
 				accountId: newMatch.accountId,
 				map: newMatch.map,
 				time: newMatch.time,
-				season: currentSeason.slug,
+				season: newMatch.season,
 				result: newMatch.result,
 				averageTier: newMatch.averageTier,
 				averageDivision: newMatch.averageDivision
@@ -89,24 +89,34 @@ function getAccountsByUser(userId: string) {
 export const load = (async (event) => {
 	const user = await requireUser(event);
 
-	const { getActiveAccount } = await getSession(event);
+	const { getActiveAccount, getActiveSeason } = await getSession(event);
 
 	const storedData = await getNewMatchValues(event);
+	const activeSeason = getActiveSeason();
+	const activeAccount = getActiveAccount();
+
+	if (!activeAccount) {
+		throw redirect(301, '/matches');
+	}
 
 	const initialValues = {
 		time: new Date(),
-		accountId: getActiveAccount()?.id,
+		accountId: activeAccount.id,
 		result: 'win',
+		season: activeSeason.slug,
 		...storedData
 	} satisfies Partial<NewMatch>;
 
 	const form = await superValidate(initialValues, newMatchSchema, { errors: false });
 
-	const availableAccounts = getAccountsByUser(user.id);
+	const availableAccounts = getAccountsByUser(user.id).then((accounts) =>
+		accounts.filter((account) => account.id !== activeAccount.id)
+	);
 
 	return {
 		form,
-		availableAccounts
+		availableAccounts,
+		activeSeason
 	};
 }) satisfies PageServerLoad;
 

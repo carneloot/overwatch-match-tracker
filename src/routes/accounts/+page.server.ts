@@ -10,7 +10,6 @@ import { accountsTable, rankUpdatesTable } from '$lib/database/schema';
 import { jsonParse } from '$lib/utils';
 import { getSession, requireUser } from '$lib/session.server';
 import type { OverwatchSeasonSlug } from '$lib/data/seasons';
-import { currentSeason } from '$lib/data/seasons';
 
 async function getRankUpdates(rankUpdateIds: string[]) {
 	if (!rankUpdateIds.length) {
@@ -82,10 +81,12 @@ async function getAccountsByUser({ userId, season }: GetAccountsByUser) {
 export const load = (async (event) => {
 	const user = await requireUser(event);
 
-	const { getActiveAccount } = await getSession(event);
+	const { getActiveAccount, getActiveSeason } = await getSession(event);
+
+	const activeSeason = getActiveSeason();
 
 	return {
-		accounts: getAccountsByUser({ userId: user.id, season: currentSeason.slug }),
+		accounts: getAccountsByUser({ userId: user.id, season: activeSeason.slug }),
 		selectedAccountId: getActiveAccount()?.id
 	};
 }) satisfies PageServerLoad;

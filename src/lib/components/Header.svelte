@@ -7,7 +7,8 @@
 
 	const links = [
 		{ name: 'Matches', href: '/matches' },
-		{ name: 'Accounts', href: '/accounts' }
+		{ name: 'Accounts', href: '/accounts' },
+		{ name: 'Seasons', href: '/seasons' }
 	];
 </script>
 
@@ -38,9 +39,9 @@
 		<LightSwitch />
 
 		{#if $page.data.user}
-			<a href="/logout" class="btn variant-glass-error">Log out</a>
+			<a href="/logout" class="variant-glass-error btn">Log out</a>
 		{:else}
-			<a href="/login" class="btn variant-filled-primary">Login</a>
+			<a href="/login" class="variant-filled-primary btn">Login</a>
 		{/if}
 	</div>
 </header>

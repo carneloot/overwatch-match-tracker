@@ -7,7 +7,6 @@
 	import SkillDivisionPicker from '$lib/components/SkillDivisionPicker.svelte';
 
 	import { heroRole, seasonalUpdate } from '$lib/prettify';
-	import { currentSeason } from '$lib/data/seasons';
 
 	export let data;
 
@@ -40,7 +39,7 @@
 					bind:value={$form.modality}
 					{...$constraints.modality}
 				>
-					{#each Object.entries(currentSeason.modalities) as [slug, name]}
+					{#each Object.entries(data.activeSeason.modalities) as [slug, name]}
 						<option value={slug}>{name}</option>
 					{/each}
 				</select>
@@ -128,6 +127,7 @@
 
 	<div class="flex flex-row justify-end">
 		<input type="hidden" name="accountId" bind:value={$form.accountId} />
+		<input type="hidden" name="season" bind:value={$form.season} />
 		{#if $form.matchId}
 			<input type="hidden" name="matchId" bind:value={$form.matchId} />
 			<input type="hidden" name="time" value={$form.time.toISOString()} />
@@ -136,9 +136,13 @@
 		{:else}
 			<!-- stop if propagation -->
 			{#if $form.seasonalUpdate === 'start'}
-				<input type="hidden" name="time" value={currentSeason.startTime.toISOString()} />
+				<input
+					type="hidden"
+					name="time"
+					value={data.activeSeason.startTime.toISOString()}
+				/>
 			{:else}
-				<input type="hidden" name="time" value={currentSeason.endTime.toISOString()} />
+				<input type="hidden" name="time" value={data.activeSeason.endTime.toISOString()} />
 			{/if}
 		{/if}
 		<button type="submit" class="variant-filled-primary btn">Create</button>

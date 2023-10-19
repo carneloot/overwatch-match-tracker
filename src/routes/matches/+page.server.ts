@@ -11,7 +11,7 @@ import {
 	matchesTable,
 	rankUpdatesTable
 } from '$lib/database/schema';
-import { currentSeason, type OverwatchSeasonSlug } from '$lib/data/seasons';
+import type { OverwatchSeasonSlug } from '$lib/data/seasons';
 import type { OverwatchHeroSlug } from '$lib/data/heroes';
 import { getSession, requireUser } from '$lib/session.server';
 import { jsonParse } from '$lib/utils';
@@ -76,13 +76,15 @@ async function countMatches({ accountId, season }: CountMatchesForDisplay) {
 export const load = (async (event) => {
 	await requireUser(event);
 
-	const { getActiveAccount } = await getSession(event);
+	const { getActiveAccount, getActiveSeason } = await getSession(event);
 
 	const activeAccount = getActiveAccount();
 
 	if (!activeAccount) {
 		throw redirect(303, '/accounts'); // Add message to select an account
 	}
+
+	const activeSeason = getActiveSeason();
 
 	const limit = Number(event.url.searchParams.get('limit') ?? 10);
 	const page = Number(event.url.searchParams.get('page') ?? 0);
@@ -91,13 +93,13 @@ export const load = (async (event) => {
 	return {
 		matches: getMatches({
 			accountId: activeAccount.id,
-			season: currentSeason.slug,
+			season: activeSeason.slug,
 			limit,
 			skip
 		}),
 		total: countMatches({
 			accountId: activeAccount.id,
-			season: currentSeason.slug
+			season: activeSeason.slug
 		})
 	};
 }) satisfies PageServerLoad;

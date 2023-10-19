@@ -10,7 +10,6 @@
 
 	import { heroesByRole } from '$lib/data/heroes';
 	import { mapsByType } from '$lib/data/maps';
-	import { currentSeason } from '$lib/data/seasons';
 	import { matchResult } from '$lib/prettify';
 	import { heroRole, mapType } from '$lib/prettify';
 
@@ -42,7 +41,7 @@
 				bind:value={$form.modality}
 				{...$constraints.modality}
 			>
-				{#each Object.entries(currentSeason.modalities) as [slug, name]}
+				{#each Object.entries(data.activeSeason.modalities) as [slug, name]}
 					<option value={slug}>{name}</option>
 				{/each}
 			</select>
@@ -94,9 +93,7 @@
 			>
 				<option value="none">Solo Queue</option>
 				{#each data.availableAccounts as account}
-					{#if account.id !== $form?.accountId}
-						<option value={account.id}>{account.battleTag}</option>
-					{/if}
+					<option value={account.id}>{account.battleTag}</option>
 				{/each}
 			</select>
 		</label>
@@ -193,6 +190,7 @@
 
 	<div class="flex flex-row justify-end">
 		<input type="hidden" name="accountId" bind:value={$form.accountId} />
+		<input type="hidden" name="season" bind:value={$form.season} />
 		<button type="submit" class="variant-filled-primary btn">Create</button>
 	</div>
 </form>

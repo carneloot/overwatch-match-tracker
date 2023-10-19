@@ -1,24 +1,36 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import { redirect } from '@sveltejs/kit';
 
+import invariant from 'tiny-invariant';
 import { and, eq } from 'drizzle-orm';
+import { isAfter } from 'date-fns';
 import { v4 as uuid } from 'uuid';
+import { z } from 'zod';
 
 import * as constants from '$lib/constants';
 
 import { accountsTable, sessionsTable, type User, usersTable } from '$lib/database/schema';
 import { createCookieSessionStorage } from '$lib/session-storage/sessions';
 import { validateMagicLink } from '$lib/magic-link.server';
+import { OverwatchSeason } from '$lib/data/seasons';
 import { SESSION_SECRET } from '$env/static/private';
+import { seasonsArray } from '$lib/data/seasons';
 import { db } from '$lib/database/db';
 import { upsertUser } from '$lib/user';
 
 const sessionIdKey = '__session_id__' as const;
 
-type SessionData = {
-	[sessionIdKey]?: string;
-	activeAccount?: { id: string; battleTag: string };
-};
+const SessionData = z.object({
+	[sessionIdKey]: z.string(),
+	activeAccount: z
+		.object({
+			id: z.string(),
+			battleTag: z.string()
+		})
+		.optional(),
+	activeSeason: OverwatchSeason
+});
+type SessionData = z.infer<typeof SessionData>;
 
 const sessionStorage = createCookieSessionStorage<SessionData>({
 	secrets: [SESSION_SECRET],
@@ -86,12 +98,35 @@ async function getDefaultActiveAccount(id: string) {
 		.get();
 }
 
+const getCurrentSeason = () => {
+	const currentTime = new Date();
+	const currentSeason = seasonsArray.find(
+		(season) => isAfter(currentTime, season.startTime) && isAfter(season.endTime, currentTime)
+	);
+
+	invariant(currentSeason, 'Current season must have been found');
+
+	return currentSeason;
+};
+
 async function getSession(event: RequestEvent) {
 	const session = await sessionStorage.getSession(event);
 	const initialValue = await sessionStorage.commitSession(session);
 
 	const getSessionId = () => session.get(sessionIdKey) as string | undefined;
 	const unsetSessionId = () => session.unset(sessionIdKey);
+
+	const currentSessionId = getSessionId();
+	const parsedValue = SessionData.safeParse(session.data);
+	if (currentSessionId && !parsedValue.success) {
+		unsetSessionId();
+		await deleteSession(currentSessionId);
+
+		const { name, options } = await sessionStorage.destroySession(session);
+		event.cookies.delete(name, options);
+
+		throw redirect(301, '/login');
+	}
 
 	const commit = async () => {
 		const currentValue = await sessionStorage.commitSession(session);
@@ -121,6 +156,9 @@ async function getSession(event: RequestEvent) {
 
 			const activeAccount = await getDefaultActiveAccount(user.id);
 			session.set('activeAccount', activeAccount);
+
+			const currentSeason = getCurrentSeason();
+			session.set('activeSeason', currentSeason);
 		},
 
 		signOut: async () => {
@@ -136,6 +174,13 @@ async function getSession(event: RequestEvent) {
 		},
 		setActiveAccount: (activeAccount: SessionData['activeAccount']) => {
 			session.set('activeAccount', activeAccount);
+		},
+
+		getActiveSeason: () => {
+			return session.get('activeSeason');
+		},
+		setActiveSeason: (value: SessionData['activeSeason']) => {
+			session.set('activeSeason', value);
 		},
 
 		sendCookie: async (event: RequestEvent) => {

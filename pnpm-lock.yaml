@@ -41,6 +41,12 @@ dependencies:
   tailwind-merge:
     specifier: ^1.14.0
     version: 1.14.0
+  tiny-invariant:
+    specifier: ^1.3.1
+    version: 1.3.1
+  typedash:
+    specifier: ^3.2.0
+    version: 3.2.0
   uuid:
     specifier: ^9.0.1
     version: 9.0.1
@@ -3847,6 +3853,10 @@ packages:
       globalyzer: 0.1.0
       globrex: 0.1.2
 
+  /tiny-invariant@1.3.1:
+    resolution: {integrity: sha512-AD5ih2NlSssTCwsMznbvwMZpJ1cbhkGd2uueNxzv2jDlEeZdU04JQfRnggJQ8DrcVBGjAsCKwFBbDlVNtEMlzw==}
+    dev: false
+
   /to-regex-range@5.0.1:
     resolution: {integrity: sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ==}
     engines: {node: '>=8.0'}
@@ -3900,6 +3910,11 @@ packages:
     engines: {node: '>=14.16'}
     dev: false
 
+  /type-fest@4.5.0:
+    resolution: {integrity: sha512-diLQivFzddJl4ylL3jxSkEc39Tpw7o1QeEHIPxVwryDK2lpB7Nqhzhuo6v5/Ls08Z0yPSAhsyAWlv1/H0ciNmw==}
+    engines: {node: '>=16'}
+    dev: false
+
   /type@1.2.0:
     resolution: {integrity: sha512-+5nt5AAniqsCnu2cEQQdpzCAh33kVx8n0VoFidKpB1dVVLAN/F+bgVOqOJqOnEnrhp222clB5p3vUlD+1QAnfg==}
     dev: true
@@ -3907,6 +3922,13 @@ packages:
   /type@2.7.2:
     resolution: {integrity: sha512-dzlvlNlt6AXU7EBSfpAscydQ7gXB+pPGsPnfJnZpiNJBDj7IaJzQlBZYGdEi4R9HmPdBv2XmWJ6YUtoTa7lmCw==}
     dev: true
+
+  /typedash@3.2.0:
+    resolution: {integrity: sha512-NVxDmUzXV2zAq7+HiHRHtX+spjWJGpyTkjUpwuwO0IhFWxXxzBQiwHtXCJzkQ2vvOaJF6V8jvhvYAu1xt/KYHg==}
+    engines: {node: '>=14.0.0'}
+    dependencies:
+      type-fest: 4.5.0
+    dev: false
 
   /typescript@5.2.2:
     resolution: {integrity: sha512-mI4WrpHsbCIcwT9cF4FZvr80QUeKvsUsUvKDoR+X/7XHQH98xYD8YHZg7ANtz2GtZt/CBq2QJ0thkGJMHfqc1w==}

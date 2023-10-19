@@ -1,14 +1,17 @@
 import { addDays } from 'date-fns';
+import { z } from 'zod';
 
-export type OverwatchSeasonSlug = string;
+export const OverwatchSeasonSlug = z.string();
+export type OverwatchSeasonSlug = z.infer<typeof OverwatchSeasonSlug>;
 
-export type OverwatchSeason = {
-	name: string;
-	slug: OverwatchSeasonSlug;
-	modalities: Record<string, string>;
-	startTime: Date;
-	endTime: Date;
-};
+export const OverwatchSeason = z.object({
+	name: z.string(),
+	slug: OverwatchSeasonSlug,
+	modalities: z.record(z.string(), z.string()),
+	startTime: z.coerce.date(),
+	endTime: z.coerce.date()
+});
+export type OverwatchSeason = z.infer<typeof OverwatchSeason>;
 
 export const seasons = {
 	'season-5': {
@@ -46,4 +49,4 @@ export const seasons = {
 	}
 } as Record<OverwatchSeasonSlug, OverwatchSeason>;
 
-export const currentSeason = seasons['season-7'];
+export const seasonsArray = Object.values(seasons);

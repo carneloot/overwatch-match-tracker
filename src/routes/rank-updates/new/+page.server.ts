@@ -16,7 +16,6 @@ import {
 } from '$lib/database/schema';
 import { HeroRole, heroes } from '$lib/data/heroes';
 import { db } from '$lib/database/db';
-import { currentSeason } from '$lib/data/seasons';
 import { getSession, requireUser } from '$lib/session.server';
 
 const getMatch = async (matchId: string) => {
@@ -24,6 +23,7 @@ const getMatch = async (matchId: string) => {
 		.select({
 			time: matchesTable.time,
 			modality: matchesTable.modality,
+			season: matchesTable.season,
 			hero: heroesMatchesTable.hero
 		})
 		.from(matchesTable)
@@ -38,7 +38,7 @@ const getMatch = async (matchId: string) => {
 export const load = (async (event) => {
 	await requireUser(event);
 
-	const { getActiveAccount } = await getSession(event);
+	const { getActiveAccount, getActiveSeason } = await getSession(event);
 
 	const matchId = event.url.searchParams.get('matchId');
 	const match = matchId ? await getMatch(matchId) : undefined;
@@ -48,11 +48,14 @@ export const load = (async (event) => {
 			: undefined
 		: undefined;
 
+	const activeSeason = getActiveSeason();
+
 	const initialValues = {
 		accountId: getActiveAccount()?.id,
 		matchId: matchId ?? undefined,
 		time: match?.time ?? new Date(),
 		modality: match?.modality ?? undefined,
+		season: match?.season ?? activeSeason.slug,
 		seasonalUpdate: 'start',
 		division: 3,
 		percentage: 50,
@@ -61,7 +64,10 @@ export const load = (async (event) => {
 
 	const form = await superValidate(initialValues, newRankUpdateSchema, { errors: false });
 
-	return { form };
+	return {
+		form,
+		activeSeason
+	};
 }) satisfies PageServerLoad;
 
 const newRankUpdateSchema = z
@@ -69,6 +75,7 @@ const newRankUpdateSchema = z
 		accountId: z.string().uuid(),
 		matchId: z.string().uuid().optional(),
 		seasonalUpdate: SeasonalUpdate.optional(),
+		season: z.string(),
 		modality: z.string(),
 		role: HeroRole.optional(),
 		time: z.coerce.date(),
@@ -112,8 +119,7 @@ async function createRankUpdate(data: NewRankUpdate) {
 		.insert(rankUpdatesTable)
 		.values({
 			id: uuid(),
-			...data,
-			season: currentSeason.slug
+			...data
 		})
 		.run();
 }
