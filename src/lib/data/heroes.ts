@@ -114,6 +114,12 @@ export const heroes = {
 		name: 'Lúcio',
 		image: null
 	},
+	mauga: {
+		slug: 'mauga',
+		role: 'tank',
+		name: 'Mauga',
+		image: null
+	},
 	mei: {
 		slug: 'mei',
 		role: 'damage',
