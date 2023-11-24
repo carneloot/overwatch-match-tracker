@@ -4,6 +4,11 @@
 	import RankUpdate from '$lib/components/RankUpdate.svelte';
 
 	export let data;
+
+	const formatter = new Intl.DateTimeFormat(undefined, {
+		dateStyle: 'short',
+		timeStyle: 'short'
+	});
 </script>
 
 <svelte:head>
@@ -26,6 +31,20 @@
 			</header>
 
 			<div class="m-2 flex-1 rounded-lg bg-surface-200 p-2 dark:bg-surface-700">
+				<span class="h4">Information</span>
+				<table class="mt-2 w-full">
+					<tr>
+						<th class="text-left">Start</th>
+						<td class="text-right">{formatter.format(season.startTime)}</td>
+					</tr>
+					<tr>
+						<th class="text-left">End</th>
+						<td class="text-right">{formatter.format(season.endTime)}</td>
+					</tr>
+				</table>
+			</div>
+
+			<div class="m-2 flex-1 rounded-lg bg-surface-200 p-2 dark:bg-surface-700">
 				<span class="h4 mb-2">Ranks</span>
 				{#if !data.rankUpdates[season.slug] || data.rankUpdates[season.slug]?.length === 0}
 					<p class="py-2">No ranks found ☹️</p>
@@ -45,7 +64,7 @@
 					formaction="?/select"
 					class="variant-soft-secondary btn btn-sm"
 					disabled={isSelected}
-					title={isSelected ? 'Season is already active' : undefined}
+					title={isSelected ? 'Season is already selected' : undefined}
 				>
 					Select
 				</button>
