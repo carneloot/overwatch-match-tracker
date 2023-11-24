@@ -1,5 +1,5 @@
-import { addDays } from 'date-fns';
 import { z } from 'zod';
+import { addDays } from 'date-fns';
 
 export const OverwatchSeasonSlug = z.string();
 export type OverwatchSeasonSlug = z.infer<typeof OverwatchSeasonSlug>;
@@ -45,7 +45,17 @@ export const seasons = {
 			'open-queue': 'Open Queue'
 		},
 		startTime: new Date('2023-10-10T18:00:00.000Z'),
-		endTime: addDays(new Date('2023-10-10T18:00:00.000Z'), 56)
+		endTime: new Date('2023-12-05T18:00:00.000Z')
+	},
+	'season-8': {
+		name: 'Season 8',
+		slug: 'season-8',
+		modalities: {
+			'role-queue': 'Role Queue',
+			'open-queue': 'Open Queue'
+		},
+		startTime: new Date('2023-12-05T18:00:00.000Z'),
+		endTime: addDays(new Date('2023-12-05T18:00:00.000Z'), 56)
 	}
 } as Record<OverwatchSeasonSlug, OverwatchSeason>;
 
