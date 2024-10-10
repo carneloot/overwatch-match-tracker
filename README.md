@@ -1,38 +1,62 @@
-# create-svelte
+# Overwatch Match Tracker
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+Welcome to the Overwatch Match Tracker! This project is designed to help players track their ranked Overwatch matches, when it still had a version of ranked that didn't update your rank after every match. I mainly made this for myself, and also to learn SvelteKit. It is not ready and I will not be developing it further since the ranking system of game has been updated.
 
-## Creating a project
+## Table of Contents
 
-If you're seeing this, you've probably already done this step. Congrats!
+- [Features](#features)
+- [Technologies Used](#technologies-used)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [License](#license)
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
+## Features
 
-# create a new project in my-app
-npm create svelte@latest my-app
-```
+- **Match Tracking**: Record information for each match, including heroes played, rank,  time and which friends played the game with you.
+- **Track multiple accounts**: Keep track of multiple accounts and their performance.
 
-## Developing
+## Technologies Used
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+- **SvelteKit**: the framework used for building the application.
+- **TypeScript**: for type safety and better development experience.
+- **Vite**: for fast builds and hot-reloading capabilities.
+- **Skeleton UI**: for a sleek and modern design.
+- **Turso**: for the database.
+- **Drizzle**: for connecting to the database.
+- **Zod**: for data validation.
 
-```bash
-npm run dev
+## Installation
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
+To run the Overwatch Match Tracker locally, follow these steps:
 
-## Building
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/carneloot/overwatch-match-tracker.git
+   cd overwatch-match-tracker
+   ```
 
-To create a production version of your app:
+2. Install dependencies:
+   ```bash
+   pnpm install
+   ```
 
-```bash
-npm run build
-```
+3. Run the development server:
+   ```bash
+   pnpm run dev
+   ```
 
-You can preview the production build with `npm run preview`.
+4. Open your browser and navigate to `http://localhost:5173` to see the app in action.
 
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+## Usage
+
+Once the application is up and running, you can:
+
+1. Log in using your email. In dev mode your browser will automatically redirect you using the magic link.
+2. Create a new account in the accounts page. This account will be used to track your matches.
+3. Start tracking your matches in the matches page, clicking on the "New Match" button.
+4. Once you reach a rank update, hover over the options button on a specific game and select "Rank update"
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
